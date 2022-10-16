@@ -43,6 +43,7 @@ function clearSelected() {
     });
     clearPotentialMovesInBoard()
     clearKillSpots()
+    
 }
 
 function returnSpotFromCoords(x,y) {
@@ -84,6 +85,29 @@ function getPieceFromSpot(spot) {
 }
 
 
+function blockHoverForAllOtherSpots(piece) {
+    pieceList.forEach(element => {
+        if (element !== piece) {
+            element.canHighlight = false
+        }
+    })
+}
+
+
+function unBlockHoverForAllOtherSpots() {
+    pieceList.forEach(element => {
+            element.canHighlight = true
+    })
+}
+
+function showBlockStatus() {
+    // show block status
+    pieceList.forEach(element => {
+        element.pieceDiv.innerHTML = "<b>" + element.canHighlight + "</b>"
+    });
+}
+
+
 class Piece {
     constructor(color,name,currentSpot,index) {
         this.name = name;
@@ -93,6 +117,7 @@ class Piece {
         this.currentSpot = currentSpot
         this.possibleMoves = []
         this.killMoves = new Set([])
+        this.canHighlight = true
 
 
         // add all pieces to pieceList
@@ -146,6 +171,7 @@ class Piece {
                 element.spotDiv.style.backgroundColor = 'yellow'
             });
         }
+        showBlockStatus()
     }   
 
     unHighlightPossibleMoves() {
@@ -157,25 +183,42 @@ class Piece {
             self.clearKillSpots()
             this.killMoves = new Set([])
         }
+        showBlockStatus()
     }
 
     updatePossibleMoves() {
 
         // TODO pawn breaks when it reaches the end of the board
         // TODO add pawn sideways and forwards killing logic
+
+        showBlockStatus()
         
         // black pawn logic
-        if(this.name === 'pawn' && this.color ==='black') {
+        if(this.name === 'pawn' && this.color ==='black' && this.canHighlight) {
             this.possibleMoves = [];
             this.nextMoveSpot = spotList[this.currentSpot.index + 8]
 
             if (this.nextMoveSpot.blocked === false) {
-            this.possibleMoves.push(this.nextMoveSpot)
-            }
+                this.possibleMoves.push(this.nextMoveSpot)
+                }
+    
+                // kill logic
+                let killMoveLeft = returnSpotFromCoords(this.nextMoveSpot.xIndex,this.nextMoveSpot.yIndex -1)
+                let killMoveMiddle = this.nextMoveSpot
+                let killMoveRight = returnSpotFromCoords(this.nextMoveSpot.xIndex,this.nextMoveSpot.yIndex + 1)
+    
+                let pawnKillMoves = [killMoveLeft,killMoveMiddle,killMoveRight]
+    
+                pawnKillMoves.forEach(element => {
+                    if (element && getPieceFromSpot(element) && getPieceFromSpot(element).color !== this.color) {
+                        this.killMoves.add(element)
+                    }
+                })
+                this.killLogic(this.killMoves)
         }
 
         // white pawn logic
-        if(this.name === 'pawn' && this.color ==='white') {
+        if(this.name === 'pawn' && this.color ==='white' && this.canHighlight) {
             this.possibleMoves = [];
             this.nextMoveSpot = spotList[this.currentSpot.index - 8]
 
@@ -191,19 +234,22 @@ class Piece {
             let pawnKillMoves = [killMoveLeft,killMoveMiddle,killMoveRight]
 
             pawnKillMoves.forEach(element => {
-                if (element && getPieceFromSpot(element)) {
-                    console.log(getPieceFromSpot element)
+                if (element && getPieceFromSpot(element) && getPieceFromSpot(element).color !== this.color) {
+                    this.killMoves.add(element)
                 }
             })
-            this.killLogic(this.killMoves)
+
+            if (this.selected) {
+                this.killLogic(this.killMoves)
+            }
         } 
         
         // rook logic
-        else if(this.name === 'rook') {
+        else if(this.name === 'rook' && this.canHighlight) {
             this.possibleMoves = this.rookLogic()
         }
 
-        else if(this.name === 'bishop') {
+        else if(this.name === 'bishop' && this.canHighlight) {
             let upLeft = this.bishopLogic(this.xIndex,this.yIndex,-1,-1,0,0) // up left
             let downRight = this.bishopLogic(this.xIndex,this.yIndex,1,1,7,7) // down right
             let upRight = this.bishopLogic(this.xIndex,this.yIndex,-1,1,0,7) // up right
@@ -212,7 +258,7 @@ class Piece {
             this.possibleMoves = [...upLeft,...downRight,...upRight,...downLeft]
         }
 
-        else if (this.name === 'knight') {
+        else if (this.name === 'knight' && this.canHighlight) {
             let down = this.knightLogic(2,1)
             let up = this.knightLogic(-2,1)
             let right = this.knightLogic(1,2)
@@ -222,12 +268,12 @@ class Piece {
             this.possibleMoves = [...down,...up,...right,...left]
         }
 
-        else if (this.name === 'king') {
+        else if (this.name === 'king' && this.canHighlight) {
 
             this.possibleMoves = this.kingLogic()
         }
 
-        else if (this.name === 'queen') {
+        else if (this.name === 'queen' && this.canHighlight) {
 
             let upLeft = this.bishopLogic(this.xIndex,this.yIndex,-1,-1,0,0) // up left
             let downRight = this.bishopLogic(this.xIndex,this.yIndex,1,1,7,7) // down right
@@ -249,6 +295,9 @@ class Piece {
         clearSelected()
         this.killMoves = new Set([])
         
+        unBlockHoverForAllOtherSpots()
+        blockHoverForAllOtherSpots(this)
+        
         spotList.forEach(element => {
             element.spotDiv.style.backgroundColor = ""
         });
@@ -269,7 +318,7 @@ class Piece {
         });
 
         moveBeingPicked = true
-
+        
     }
 
     pickSpot(index) {
@@ -303,6 +352,8 @@ class Piece {
         // clear Killmoves set
         this.killMoves = new Set([])
         clearKillSpots()
+
+        unBlockHoverForAllOtherSpots()
 
     }
 
