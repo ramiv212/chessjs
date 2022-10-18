@@ -187,7 +187,6 @@ class Piece {
     updatePossibleMoves() {
 
         // TODO pawn breaks when it reaches the end of the board
-        // TODO add pawn sideways and forwards killing logic
 
         
         // black pawn logic
@@ -220,26 +219,23 @@ class Piece {
             this.nextMoveSpot = spotList[this.currentSpot.index - 8]
 
             if (this.nextMoveSpot.blocked === false) {
-            this.possibleMoves.push(this.nextMoveSpot)
-            }
-
-            // kill logic
-            let killMoveLeft = returnSpotFromCoords(this.nextMoveSpot.xIndex,this.nextMoveSpot.yIndex -1)
-            let killMoveMiddle = this.nextMoveSpot
-            let killMoveRight = returnSpotFromCoords(this.nextMoveSpot.xIndex,this.nextMoveSpot.yIndex + 1)
-
-            let pawnKillMoves = [killMoveLeft,killMoveMiddle,killMoveRight]
-
-            pawnKillMoves.forEach(element => {
-                if (element && getPieceFromSpot(element) && getPieceFromSpot(element).color !== this.color) {
-                    this.killMoves.add(element)
+                this.possibleMoves.push(this.nextMoveSpot)
                 }
-            })
-
-            if (this.selected) {
+    
+                // kill logic
+                let killMoveLeft = returnSpotFromCoords(this.nextMoveSpot.xIndex,this.nextMoveSpot.yIndex -1)
+                let killMoveMiddle = this.nextMoveSpot
+                let killMoveRight = returnSpotFromCoords(this.nextMoveSpot.xIndex,this.nextMoveSpot.yIndex + 1)
+    
+                let pawnKillMoves = [killMoveLeft,killMoveMiddle,killMoveRight]
+    
+                pawnKillMoves.forEach(element => {
+                    if (element && getPieceFromSpot(element) && getPieceFromSpot(element).color !== this.color) {
+                        this.killMoves.add(element)
+                    }
+                })
                 this.killLogic(this.killMoves)
-            }
-        } 
+        }
         
         // rook logic
         else if(this.name === 'rook' && this.canHighlight) {
