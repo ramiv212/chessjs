@@ -171,7 +171,6 @@ class Piece {
                 element.spotDiv.style.backgroundColor = 'yellow'
             });
         }
-        showBlockStatus()
     }   
 
     unHighlightPossibleMoves() {
@@ -183,7 +182,6 @@ class Piece {
             self.clearKillSpots()
             this.killMoves = new Set([])
         }
-        showBlockStatus()
     }
 
     updatePossibleMoves() {
@@ -191,7 +189,6 @@ class Piece {
         // TODO pawn breaks when it reaches the end of the board
         // TODO add pawn sideways and forwards killing logic
 
-        showBlockStatus()
         
         // black pawn logic
         if(this.name === 'pawn' && this.color ==='black' && this.canHighlight) {
@@ -492,6 +489,7 @@ class Piece {
         return possibleMoves
     }
 
+    // TODO bishops can't kill top left
     bishopPieceToKillLogic(nextX,nextY){
         // bishop piece to kill logic
         if (nextX && nextY && returnSpotFromCoords(nextX,nextY)) {
@@ -502,7 +500,7 @@ class Piece {
         }
     }
 
-    bishopLogic(x2,y2, directionX,directionY,limitX,limitY) {
+    bishopLogic(x2,y2,directionX,directionY,limitX,limitY) {
 
         let possibleMoves = []
 
@@ -518,31 +516,40 @@ class Piece {
         let nextX = currentX + directionX
         let nextY = currentY + directionY
 
-        this.bishopPieceToKillLogic(nextX,nextY)
+        let loop = true
 
         // loop that stops once the x coord reaches a number that is one more or less than the last number.
         // also stops if the next spot being checked is blocked.
-        while (nextX != limitX + directionX && nextY != limitY + directionY && returnSpotFromCoords(nextX,nextY).blocked === false){
+        while (loop){
 
-            // loop through all the spots and add the ones that match the next x and y criteria to the possible moves list
-            spotList.forEach(element => {
-                if (element.xIndex == nextX && element.yIndex == nextY) {
-                    possibleMoves.push(element)
+            if (nextX != limitX + directionX && nextY != limitY + directionY && returnSpotFromCoords(nextX,nextY).blocked === false) {
+                // loop through all the spots and add the ones that match the next x and y criteria to the possible moves list
+                spotList.forEach(element => {
+                    if (element.xIndex == nextX && element.yIndex == nextY) {
+                        possibleMoves.push(element)
+                    }
+                });
+
+                // set the next spot as the current spot
+                currentX = nextX
+                currentY = nextY
+
+                // make next spot being evaluated the current spot plus or minus the direction number (depending on direction) and rinse and repeat the loop
+                nextX = currentX + directionX
+                nextY = currentY + directionY
+
+            } else {
+
+                if (returnSpotFromCoords(nextX,nextY) && getPieceFromSpot(returnSpotFromCoords(nextX,nextY)) && getPieceFromSpot(returnSpotFromCoords(nextX,nextY)).color !== this.color) {
+                    console.log(nextX,nextY)
+                    this.killMoves.add(returnSpotFromCoords(nextX,nextY))
                 }
-            });
 
-            // set the next spot as the current spot
-            currentX = nextX
-            currentY = nextY
-
-            // make next spot being evaluated the current spot plus or minus the direction number (depending on direction) and rinse and repeat the loop
-            nextX = currentX + directionX
-            nextY = currentY + directionY
-
-            this.bishopPieceToKillLogic(nextX,nextY)
+                this.killLogic(this.killMoves)
+                loop = false
+                return possibleMoves
+            }
         }
-            this.killLogic(this.killMoves) 
-            return possibleMoves
     }
 
         knightLogic (directionX,directionY) {
