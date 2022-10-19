@@ -6,20 +6,58 @@
 --piece-container-height: 100px;
 }
 
+body {
+    margin: 0;
+}
 
 #board-div {
     border: 2px;
     border-color: blanchedalmond;
     border-style: solid;
-    width: 800px;
-    height: 800px;
+    min-width: 800px;
+    max-width: 800px;
+    min-height: 800px;
+    max-height: 800px;
     margin: auto;
     display: flex;
     flex-wrap: wrap;
 }
 
-/* Black Pieces */
+#main-div {
+    display: flex;
+}
 
+#main-hud-div {
+    display:flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: blanchedalmond;
+    margin-right: 15px;
+}
+
+#player-one-hud {
+    width: 100%;
+    height: 50%;
+    padding: 10px;
+    border-top-style: solid;
+    border-top-color: white;
+    border-top-width: 7.5px;
+}
+
+#player-two-hud {
+    width: 100%;
+    height: 50%;
+    padding: 10px;
+    border-bottom-style: solid;
+    border-bottom-color: white;
+    border-bottom-width: 7.5px;
+}
+
+#main-chat-div {
+    width: 100%;
+}
+
+/* Black Pieces */
 #blackpawn {
     width: var(--piece-width);
     height: var(--piece-width);

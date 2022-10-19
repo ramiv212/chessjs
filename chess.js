@@ -1,11 +1,21 @@
 const app = document.getElementById('app')
 
+// dialog box for upgrading pawn
+const dialogBox = document.getElementById('pawnUpdate');
+const selectEl = dialogBox.querySelector('select');
+const confirmBtn = dialogBox.querySelector('#confirmBtn');
+
+const playerOneTurnDisplay = document.getElementById('player-one-turn')
+const playerTwoTurnDisplay = document.getElementById('player-two-turn')
+
+
 const spotList = []
 const pieceList = []
 
 let selectedPiece = null
 let moveBeingPicked = false
 
+let whiteTurn = true
 
 // check if window is resized
 window.addEventListener('resize', (e) => {
@@ -13,12 +23,6 @@ window.addEventListener('resize', (e) => {
         element.repositionPieces()
     });
 })
-
-
-// dialog box for upgrading pawn
-const dialogBox = document.getElementById('pawnUpdate');
-const selectEl = dialogBox.querySelector('select');
-const confirmBtn = dialogBox.querySelector('#confirmBtn');
 
 // create a div for the board
 const boardDiv = document.createElement('div');
@@ -132,6 +136,7 @@ class Piece {
         this.killMoves = new Set([])
         this.canHighlight = true
         this.timesMoved = 0
+        this.turn = false
 
         // add all pieces to pieceList
         pieceList.push(this)
@@ -340,33 +345,34 @@ class Piece {
 
     select() {  
 
-        clearSelected()
-        this.killMoves = new Set([])
-        
-        unBlockHoverForAllOtherSpots()
-        blockHoverForAllOtherSpots(this)
-        
-        spotList.forEach(element => {
-            element.spotDiv.style.backgroundColor = ""
-        });
-        
-        this.selected = true
-        if (this.selected === true) {
-            this.pieceDiv.className = 'selected'
-            selectedPiece = this
+        if (this.turn) {
+            clearSelected()
+            this.killMoves = new Set([])
+            
+            unBlockHoverForAllOtherSpots()
+            blockHoverForAllOtherSpots(this)
+            
+            spotList.forEach(element => {
+                element.spotDiv.style.backgroundColor = ""
+            });
+            
+            this.selected = true
+            if (this.selected === true) {
+                this.pieceDiv.className = 'selected'
+                selectedPiece = this
+            }
+            this.updatePossibleMoves()
+
+            this.possibleMoves.forEach(element => {
+                let newSpotButton = document.createElement('button')
+                newSpotButton.className = "new-spot-button"
+                newSpotButton.style.width = '100px;'
+                newSpotButton.onclick = () => (this.pickSpot(element.index))
+                element.spotDiv.appendChild(newSpotButton)
+            });
+
+            moveBeingPicked = true
         }
-        this.updatePossibleMoves()
-
-        this.possibleMoves.forEach(element => {
-            let newSpotButton = document.createElement('button')
-            newSpotButton.className = "new-spot-button"
-            newSpotButton.style.width = '100px;'
-            newSpotButton.onclick = () => (this.pickSpot(element.index))
-            element.spotDiv.appendChild(newSpotButton)
-        });
-
-        moveBeingPicked = true
-        
     }
 
     pickSpot(index) {
@@ -403,7 +409,13 @@ class Piece {
 
         unBlockHoverForAllOtherSpots()
 
+        // this is to check if pawns can move double initially
         this.timesMoved ++
+
+        // turns
+        whiteTurn = (!whiteTurn)
+        toggleTurn()
+
     }
 
     rookLogic() {
@@ -625,6 +637,7 @@ class Piece {
                     }
                 }
             )
+
         return filteredMoves; }
 
         kingLogic () {
@@ -822,3 +835,41 @@ const blackKing = new Piece('black', 'king', spotList[4],28)
 const blackKnight2 = new Piece('black', 'knight', spotList[5],29)
 const blackBishop2 = new Piece('black', 'bishop', spotList[6],30)
 const blackRook2 = new Piece('black', 'rook', spotList[7],31)
+
+
+function check() {
+// 
+}
+
+function toggleTurn() {
+    if (whiteTurn) {
+        pieceList.forEach(piece => {
+            if(piece.color === "white") {
+                piece.turn = true
+            } else {
+                piece.turn = false
+            }
+        });
+
+        playerOneTurnDisplay.innerText = "- Your Turn"
+        playerTwoTurnDisplay.innerText = ""
+
+        check()
+
+    } else {
+        pieceList.forEach(piece => {
+            if(piece.color === "black") {
+                piece.turn = true
+            } else {
+                piece.turn = false
+            }
+        });
+
+        playerOneTurnDisplay.innerText = ""
+        playerTwoTurnDisplay.innerText = "- Your Turn"
+
+        check()
+    }
+}
+
+toggleTurn()
