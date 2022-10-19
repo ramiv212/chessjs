@@ -16,6 +16,28 @@
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
+
+        <dialog id="pawnUpdate">
+            <form method="dialog">
+              <p>
+                <label>What piece would you like to upgrade to?
+                  <select>
+                    <option value="default">Choose…</option>
+                    <option>Queen</option>
+                    <option>Bishop</option>
+                    <option>Rook</option>
+                    <option>Knight</option>
+                  </select>
+                </label>
+              </p>
+              <div>
+                <button value="cancel">Cancel</button>
+                <button id="confirmBtn" value="default">Confirm</button>
+              </div>
+            </form>
+          </dialog>
+          <output></output>
+
         <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;" id="app"></div>
         
         <script src="chess.js" async defer></script>

@@ -6,6 +6,20 @@ const pieceList = []
 let selectedPiece = null
 let moveBeingPicked = false
 
+
+// check if window is resized
+window.addEventListener('resize', (e) => {
+    pieceList.forEach(element => {
+        element.repositionPieces()
+    });
+})
+
+
+// dialog box for upgrading pawn
+const dialogBox = document.getElementById('pawnUpdate');
+const selectEl = dialogBox.querySelector('select');
+const confirmBtn = dialogBox.querySelector('#confirmBtn');
+
 // create a div for the board
 const boardDiv = document.createElement('div');
 app.appendChild(boardDiv);
@@ -13,7 +27,6 @@ boardDiv.id = 'board-div';
 
 
 // game functions
-
 function clearKillSpots() {
     spotList.forEach(element => {
         if (element.spotDiv.childNodes) {
@@ -118,7 +131,7 @@ class Piece {
         this.possibleMoves = []
         this.killMoves = new Set([])
         this.canHighlight = true
-
+        this.timesMoved = 0
 
         // add all pieces to pieceList
         pieceList.push(this)
@@ -164,6 +177,11 @@ class Piece {
         }
     }
 
+    repositionPieces() {
+        this.containerDiv.style.top = this.currentSpot.position.top + 'px';
+        this.containerDiv.style.left = this.currentSpot.position.left + 'px'
+    }
+
     highlightPossibleMoves() {
         // highlight possible moves on hover
         if (moveBeingPicked === false) {
@@ -184,57 +202,94 @@ class Piece {
         }
     }
 
+    convertPawnLogic() {
+        if ((this.currentSpot.xIndex === 7 && this.name === 'pawn' && this.color === 'black') || (this.currentSpot.xIndex === 0 && this.name === 'pawn' && this.color === 'white')) {
+            // convert piece logic
+            dialogBox.showModal()
+            confirmBtn.onclick = () => {
+                this.name = selectEl.value.toLowerCase()
+                this.pieceDiv.style.backgroundImage = "url('images/" + this.color + this.name + ".png')"
+            }
+        }
+    }
+
     updatePossibleMoves() {
-
-        // TODO pawn breaks when it reaches the end of the board
-
-        
         // black pawn logic
         if(this.name === 'pawn' && this.color ==='black' && this.canHighlight) {
             this.possibleMoves = [];
-            this.nextMoveSpot = spotList[this.currentSpot.index + 8]
 
-            if (this.nextMoveSpot.blocked === false) {
-                this.possibleMoves.push(this.nextMoveSpot)
-                }
+            this.nextMoveSpot = spotList[this.currentSpot.index + 8]
+            
+            if (this.nextMoveSpot === undefined) {
+                // do nothing
+            } else if (this.timesMoved < 1 && this.nextMoveSpot.blocked === false) {
+                this.possibleMoves.push(spotList[this.currentSpot.index + 16])
+                this.possibleMoves.push(spotList[this.currentSpot.index + 8])
+            } else if (this.timesMoved > 0 && this.nextMoveSpot.blocked === false){
+                this.possibleMoves.push(spotList[this.currentSpot.index + 8])
+            }
     
+            if (this.nextMoveSpot !== undefined) {
                 // kill logic
                 let killMoveLeft = returnSpotFromCoords(this.nextMoveSpot.xIndex,this.nextMoveSpot.yIndex -1)
                 let killMoveMiddle = this.nextMoveSpot
                 let killMoveRight = returnSpotFromCoords(this.nextMoveSpot.xIndex,this.nextMoveSpot.yIndex + 1)
-    
+
                 let pawnKillMoves = [killMoveLeft,killMoveMiddle,killMoveRight]
-    
+
+                // first turn kill logic
+                if (this.timesMoved < 1) {
+                    let firstTurnKillMove = returnSpotFromCoords(this.nextMoveSpot.xIndex + 1,this.nextMoveSpot.yIndex)
+                    pawnKillMoves.push(firstTurnKillMove)
+                }
+        
                 pawnKillMoves.forEach(element => {
                     if (element && getPieceFromSpot(element) && getPieceFromSpot(element).color !== this.color) {
                         this.killMoves.add(element)
                     }
                 })
                 this.killLogic(this.killMoves)
+            }
+            this.convertPawnLogic()
         }
 
         // white pawn logic
         if(this.name === 'pawn' && this.color ==='white' && this.canHighlight) {
             this.possibleMoves = [];
-            this.nextMoveSpot = spotList[this.currentSpot.index - 8]
 
-            if (this.nextMoveSpot.blocked === false) {
-                this.possibleMoves.push(this.nextMoveSpot)
-                }
+            this.nextMoveSpot = spotList[this.currentSpot.index - 8]
+            
+            if (this.nextMoveSpot === undefined) {
+                // do nothing
+            } else if (this.timesMoved < 1 && this.nextMoveSpot.blocked === false) {
+                this.possibleMoves.push(spotList[this.currentSpot.index - 16])
+                this.possibleMoves.push(spotList[this.currentSpot.index - 8])
+            } else if (this.timesMoved > 0 && this.nextMoveSpot.blocked === false){
+                this.possibleMoves.push(spotList[this.currentSpot.index - 8])
+            }
     
+            if (this.nextMoveSpot !== undefined) {
                 // kill logic
                 let killMoveLeft = returnSpotFromCoords(this.nextMoveSpot.xIndex,this.nextMoveSpot.yIndex -1)
                 let killMoveMiddle = this.nextMoveSpot
                 let killMoveRight = returnSpotFromCoords(this.nextMoveSpot.xIndex,this.nextMoveSpot.yIndex + 1)
-    
+
                 let pawnKillMoves = [killMoveLeft,killMoveMiddle,killMoveRight]
-    
+
+                // first turn kill logic
+                if (this.timesMoved < 1) {
+                    let firstTurnKillMove = returnSpotFromCoords(this.nextMoveSpot.xIndex - 1,this.nextMoveSpot.yIndex)
+                    pawnKillMoves.push(firstTurnKillMove)
+                }
+        
                 pawnKillMoves.forEach(element => {
                     if (element && getPieceFromSpot(element) && getPieceFromSpot(element).color !== this.color) {
                         this.killMoves.add(element)
                     }
                 })
                 this.killLogic(this.killMoves)
+            }
+            this.convertPawnLogic()
         }
         
         // rook logic
@@ -348,6 +403,7 @@ class Piece {
 
         unBlockHoverForAllOtherSpots()
 
+        this.timesMoved ++
     }
 
     rookLogic() {
@@ -537,7 +593,6 @@ class Piece {
             } else {
 
                 if (returnSpotFromCoords(nextX,nextY) && getPieceFromSpot(returnSpotFromCoords(nextX,nextY)) && getPieceFromSpot(returnSpotFromCoords(nextX,nextY)).color !== this.color) {
-                    console.log(nextX,nextY)
                     this.killMoves.add(returnSpotFromCoords(nextX,nextY))
                 }
 
