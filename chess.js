@@ -817,7 +817,7 @@ class Spot {
         }
 
         // print some info on the tiles
-        this.spotDiv.innerHTML = this.xIndex + "," + this.yIndex + '<br>' + this.index
+        // this.spotDiv.innerHTML = this.xIndex + "," + this.yIndex + '<br>' + this.index
 
     }
     
@@ -878,7 +878,7 @@ const whitePawn8 = new Piece('white', 'pawn', spotList[55],7)
 const whiteRook1 = new Piece('white', 'rook', spotList[56],8)
 const whiteBishop1 = new Piece('white', 'bishop', spotList[57],9)
 const whiteKnight1 = new Piece('white', 'knight', spotList[58],10)
-const whiteQueen = new Piece('white', 'queen', spotList[32],11)
+const whiteQueen = new Piece('white', 'queen', spotList[59],11)
 const whiteKing = new Piece('white', 'king', spotList[60],12)
 const whiteKnight2 = new Piece('white', 'knight', spotList[61],13)
 const whiteBishop2 = new Piece('white', 'bishop', spotList[62],14)

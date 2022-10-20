@@ -69,8 +69,44 @@ body {
 
 }
 
+#player-one-turn {
+    color: green;
+}
+
+#player-two-turn {
+    color: green;
+}
+
 #main-chat-div {
     width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#chat-box {
+    width: 70%;
+    height: 80%;
+}
+
+#chat-title {
+    font-family: 'Cinzel Decorative';
+}
+
+#chat-title > h2 {
+    margin: 0;
+    padding: 0;
+}
+
+#main-chat-div > button {
+    background-color: green;
+    color: white;
+    margin: 10px;
+    width: 80px;
+    height: 30px;
+    border-style: none;
 }
 
 /* Black Pieces */
