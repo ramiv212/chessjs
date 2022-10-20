@@ -8,6 +8,11 @@ const confirmBtn = dialogBox.querySelector('#confirmBtn');
 const playerOneTurnDisplay = document.getElementById('player-one-turn')
 const playerTwoTurnDisplay = document.getElementById('player-two-turn')
 
+const deadWhitePiecesDiv = document.getElementById('dead-white-pieces')
+const deadBlackPiecesDiv = document.getElementById('dead-black-pieces')
+
+const deadWhitePieces = []
+const deadBlackPieces = []
 
 const spotList = []
 const pieceList = []
@@ -38,7 +43,7 @@ function clearKillSpots() {
     spotList.forEach(element => {
         if (element.spotDiv.childNodes) {
             let children = Array.from(element.spotDiv.childNodes)
-            killSpots = children.slice(3)
+            killSpots = children.slice(0)
             if (killSpots) {
                 killSpots.forEach(element => {
                     element.remove()
@@ -50,8 +55,8 @@ function clearKillSpots() {
 
 function clearPotentialMovesInBoard() {
     spotList.forEach(element => {
-        if (element.spotDiv.childNodes[3]) {
-            element.spotDiv.childNodes[3].remove()
+        if (element.spotDiv.childNodes[0]) {
+            element.spotDiv.childNodes[0].remove()
         }
     })
 }
@@ -135,6 +140,33 @@ function showBlockStatus() {
     });
 }
 
+function removeDeadPiece (deadPiece) {
+    deadPiece.pieceDiv.style.width = '40px'
+    deadPiece.pieceDiv.style.height = '40px'
+    deadPiece.pieceDiv.style.backgroundSize = 'cover'
+
+    deadPiece.pieceDiv.parentElement.remove()
+
+        deadPiece.dead = true
+
+    if (deadPiece.color === 'white') {
+        deadWhitePieces.push(deadPiece)
+        deadWhitePiecesDiv.appendChild(deadPiece.pieceDiv)
+
+    } else {
+        deadBlackPieces.push(deadPiece)
+        deadBlackPiecesDiv.appendChild(deadPiece.pieceDiv)
+    }
+}
+
+function gameOver(color) {
+    if (color === 'black') {
+        alert('White wins!')
+    } else {
+        alert('Black Wins!')
+    }
+}
+
 
 // returns flase if none of the kings are in check. If one of them is in check it returns true.
 // this is used to check if the purple background can be removed (once king is no longer in check)
@@ -165,6 +197,7 @@ class Piece {
         this.canHighlight = true
         this.timesMoved = 0
         this.turn = false
+        this.dead = false
 
         // add all pieces to pieceList
         pieceList.push(this)
@@ -218,7 +251,7 @@ class Piece {
 
     highlightPossibleMoves() {
         // highlight possible moves on hover
-        if (moveBeingPicked === false) {
+        if (moveBeingPicked === false && this.dead === false) {
             this.possibleMoves.forEach(element => {
                 element.spotDiv.style.backgroundColor = 'yellow'
             });
@@ -269,12 +302,6 @@ class Piece {
                 let killMoveRight = returnSpotFromCoords(this.nextMoveSpot.xIndex,this.nextMoveSpot.yIndex + 1)
 
                 let pawnKillMoves = [killMoveLeft,killMoveRight]
-
-                // first turn kill logic
-                if (this.timesMoved < 1) {
-                    let firstTurnKillMove = returnSpotFromCoords(this.nextMoveSpot.xIndex + 1,this.nextMoveSpot.yIndex)
-                    pawnKillMoves.push(firstTurnKillMove)
-                }
         
                 pawnKillMoves.forEach(element => {
                     if (element && getPieceFromSpot(element) && getPieceFromSpot(element).color !== this.color) {
@@ -307,12 +334,6 @@ class Piece {
                 let killMoveRight = returnSpotFromCoords(this.nextMoveSpot.xIndex,this.nextMoveSpot.yIndex + 1)
 
                 let pawnKillMoves = [killMoveLeft,killMoveRight]
-
-                // first turn kill logic
-                if (this.timesMoved < 1) {
-                    let firstTurnKillMove = returnSpotFromCoords(this.nextMoveSpot.xIndex - 1,this.nextMoveSpot.yIndex)
-                    pawnKillMoves.push(firstTurnKillMove)
-                }
         
                 pawnKillMoves.forEach(element => {
                     if (element && getPieceFromSpot(element) && getPieceFromSpot(element).color !== this.color) {
@@ -360,12 +381,9 @@ class Piece {
             let upRight = this.bishopLogic(this.xIndex,this.yIndex,-1,1,0,7) // up right
             let downLeft = this.bishopLogic(this.xIndex,this.yIndex,1,-1,7,0) // down left
 
-            let up = this.bishopLogic(this.xIndex,this.yIndex,-1,0,0,0) // up left
-            let down = this.bishopLogic(this.xIndex,this.yIndex,1,0,7,7) // down right
-            let right = this.bishopLogic(this.xIndex,this.yIndex,0,1,0,7) // up right
-            let left = this.bishopLogic(this.xIndex,this.yIndex,0,-1,7,0) // down left
+            let perpendiculars = this.rookLogic()
 
-            this.possibleMoves = [...upLeft,...downRight,...upRight,...downLeft,...up,...down,...right,...left]
+            this.possibleMoves = [...upLeft,...downRight,...upRight,...downLeft,...perpendiculars]
         }
         
     }
@@ -740,7 +758,8 @@ class Piece {
         killFunc(spot) {
             let deadPiece = getPieceFromSpot(spot)
 
-            deadPiece.pieceDiv.parentElement.remove()
+            removeDeadPiece(deadPiece)
+        
             clearKillSpots()
             this.killMoves = new Set([])
             
@@ -753,6 +772,11 @@ class Piece {
             this.updatePossibleMoves()
 
             this.pickSpot(spot.index)
+
+            // this will end the game
+            if (deadPiece.name === 'king') {
+                gameOver(deadPiece.color)
+            }
         }
     }
 
@@ -854,7 +878,7 @@ const whitePawn8 = new Piece('white', 'pawn', spotList[55],7)
 const whiteRook1 = new Piece('white', 'rook', spotList[56],8)
 const whiteBishop1 = new Piece('white', 'bishop', spotList[57],9)
 const whiteKnight1 = new Piece('white', 'knight', spotList[58],10)
-const whiteQueen = new Piece('white', 'queen', spotList[59],11)
+const whiteQueen = new Piece('white', 'queen', spotList[32],11)
 const whiteKing = new Piece('white', 'king', spotList[60],12)
 const whiteKnight2 = new Piece('white', 'knight', spotList[61],13)
 const whiteBishop2 = new Piece('white', 'bishop', spotList[62],14)
@@ -897,8 +921,8 @@ function toggleTurn() {
             }
         });
 
-        playerOneTurnDisplay.innerText = "- Your Turn"
-        playerTwoTurnDisplay.innerText = ""
+        playerOneTurnDisplay.innerHTML = "- Your Turn"
+        playerTwoTurnDisplay.innerHTML = "<br>"
 
 
     } else {
@@ -912,8 +936,8 @@ function toggleTurn() {
             }
         });
 
-        playerOneTurnDisplay.innerText = ""
-        playerTwoTurnDisplay.innerText = "- Your Turn"
+        playerOneTurnDisplay.innerHTML = "<br>"
+        playerTwoTurnDisplay.innerHTML = "- Your Turn"
 
     }
 }
