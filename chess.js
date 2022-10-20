@@ -11,11 +11,54 @@ const playerTwoTurnDisplay = document.getElementById('player-two-turn')
 const deadWhitePiecesDiv = document.getElementById('dead-white-pieces')
 const deadBlackPiecesDiv = document.getElementById('dead-black-pieces')
 
-const deadWhitePieces = []
-const deadBlackPieces = []
-
 const spotList = []
 const pieceList = []
+
+
+function initPieces () {
+    // init white pawns
+    const whitePawn1 = new Piece('white', 'pawn', spotList[48],0)
+    const whitePawn2 = new Piece('white', 'pawn', spotList[49],1)
+    const whitePawn3 = new Piece('white', 'pawn', spotList[50],2)
+    const whitePawn4 = new Piece('white', 'pawn', spotList[51],3)
+    const whitePawn5 = new Piece('white', 'pawn', spotList[52],4)
+    const whitePawn6 = new Piece('white', 'pawn', spotList[53],5)
+    const whitePawn7 = new Piece('white', 'pawn', spotList[54],6)
+    const whitePawn8 = new Piece('white', 'pawn', spotList[55],7)
+
+    // init white specials
+    const whiteRook1 = new Piece('white', 'rook', spotList[56],8)
+    const whiteBishop1 = new Piece('white', 'bishop', spotList[57],9)
+    const whiteKnight1 = new Piece('white', 'knight', spotList[58],10)
+    const whiteQueen = new Piece('white', 'queen', spotList[59],11)
+    const whiteKing = new Piece('white', 'king', spotList[60],12)
+    const whiteKnight2 = new Piece('white', 'knight', spotList[61],13)
+    const whiteBishop2 = new Piece('white', 'bishop', spotList[62],14)
+    const whiteRook2 = new Piece('white', 'rook', spotList[63],15)
+
+
+
+    // init black pawns
+    const blackPawn3 = new Piece('black', 'pawn', spotList[8],16)
+    const blackPawn1 = new Piece('black', 'pawn', spotList[9],17)
+    const blackPawn2 = new Piece('black', 'pawn', spotList[10],18)
+    const blackPawn4 = new Piece('black', 'pawn', spotList[11],19)
+    const blackPawn5 = new Piece('black', 'pawn', spotList[12],20)
+    const blackPawn6 = new Piece('black', 'pawn', spotList[13],21)
+    const blackPawn7 = new Piece('black', 'pawn', spotList[14],22)
+    const blackPawn8 = new Piece('black', 'pawn', spotList[15],23)
+
+    // init black specials
+    const blackRook1 = new Piece('black', 'rook', spotList[0],24)
+    const blackBishop1 = new Piece('black', 'bishop', spotList[1],25)
+    const blackKnight1 = new Piece('black', 'knight', spotList[2],26)
+    const blackQueen = new Piece('black', 'queen', spotList[3],27)
+    const blackKing = new Piece('black', 'king', spotList[4],28)
+    const blackKnight2 = new Piece('black', 'knight', spotList[5],29)
+    const blackBishop2 = new Piece('black', 'bishop', spotList[6],30)
+    const blackRook2 = new Piece('black', 'rook', spotList[7],31)
+}
+
 
 // this set is used to check if any kings are in check
 let checkKillList = new Set([])
@@ -39,6 +82,41 @@ boardDiv.id = 'board-div';
 
 
 // game functions
+
+function toggleTurn() {
+    if (whiteTurn) {
+        pieceList.forEach(piece => {
+            if(piece.color === "white") {
+                checkKillList.clear()
+
+                piece.turn = true
+            } else {
+                piece.turn = false
+
+            }
+        });
+
+        playerOneTurnDisplay.innerHTML = "- Your Turn"
+        playerTwoTurnDisplay.innerHTML = "<br>"
+
+
+    } else {
+        pieceList.forEach(piece => {
+            if(piece.color === "black") {
+                checkKillList.clear()
+                piece.turn = true
+            } else {
+                piece.turn = false
+
+            }
+        });
+
+        playerOneTurnDisplay.innerHTML = "<br>"
+        playerTwoTurnDisplay.innerHTML = "- Your Turn"
+
+    }
+}
+
 function clearKillSpots() {
     spotList.forEach(element => {
         if (element.spotDiv.childNodes) {
@@ -150,14 +228,13 @@ function removeDeadPiece (deadPiece) {
         deadPiece.dead = true
 
     if (deadPiece.color === 'white') {
-        deadWhitePieces.push(deadPiece)
         deadWhitePiecesDiv.appendChild(deadPiece.pieceDiv)
 
     } else {
-        deadBlackPieces.push(deadPiece)
         deadBlackPiecesDiv.appendChild(deadPiece.pieceDiv)
     }
 }
+
 
 function gameOver(color) {
     if (color === 'black') {
@@ -165,6 +242,21 @@ function gameOver(color) {
     } else {
         alert('Black Wins!')
     }
+
+    // remove all pieces from the board
+    pieceList.forEach(piece => {
+        piece.pieceDiv.remove()
+    })
+
+    // remove pieces from dead areas
+    deadBlackPiecesDiv.innerHTML = ""
+    deadWhitePiecesDiv.innerHTML = ""
+
+    initPieces()
+
+    whiteTurn = true
+    toggleTurn()
+
 }
 
 
@@ -864,82 +956,6 @@ for (let index = 0; index < 64; index++) {
 }
 
 
-// init white pawns
-const whitePawn1 = new Piece('white', 'pawn', spotList[48],0)
-const whitePawn2 = new Piece('white', 'pawn', spotList[49],1)
-const whitePawn3 = new Piece('white', 'pawn', spotList[50],2)
-const whitePawn4 = new Piece('white', 'pawn', spotList[51],3)
-const whitePawn5 = new Piece('white', 'pawn', spotList[52],4)
-const whitePawn6 = new Piece('white', 'pawn', spotList[53],5)
-const whitePawn7 = new Piece('white', 'pawn', spotList[54],6)
-const whitePawn8 = new Piece('white', 'pawn', spotList[55],7)
-
-// init white specials
-const whiteRook1 = new Piece('white', 'rook', spotList[56],8)
-const whiteBishop1 = new Piece('white', 'bishop', spotList[57],9)
-const whiteKnight1 = new Piece('white', 'knight', spotList[58],10)
-const whiteQueen = new Piece('white', 'queen', spotList[59],11)
-const whiteKing = new Piece('white', 'king', spotList[60],12)
-const whiteKnight2 = new Piece('white', 'knight', spotList[61],13)
-const whiteBishop2 = new Piece('white', 'bishop', spotList[62],14)
-const whiteRook2 = new Piece('white', 'rook', spotList[63],15)
-
-
-
-// init black pawns
-const blackPawn3 = new Piece('black', 'pawn', spotList[8],16)
-const blackPawn1 = new Piece('black', 'pawn', spotList[9],17)
-const blackPawn2 = new Piece('black', 'pawn', spotList[10],18)
-const blackPawn4 = new Piece('black', 'pawn', spotList[11],19)
-const blackPawn5 = new Piece('black', 'pawn', spotList[12],20)
-const blackPawn6 = new Piece('black', 'pawn', spotList[13],21)
-const blackPawn7 = new Piece('black', 'pawn', spotList[14],22)
-const blackPawn8 = new Piece('black', 'pawn', spotList[15],23)
-
-// init black specials
-const blackRook1 = new Piece('black', 'rook', spotList[0],24)
-const blackBishop1 = new Piece('black', 'bishop', spotList[1],25)
-const blackKnight1 = new Piece('black', 'knight', spotList[2],26)
-const blackQueen = new Piece('black', 'queen', spotList[3],27)
-const blackKing = new Piece('black', 'king', spotList[4],28)
-const blackKnight2 = new Piece('black', 'knight', spotList[5],29)
-const blackBishop2 = new Piece('black', 'bishop', spotList[6],30)
-const blackRook2 = new Piece('black', 'rook', spotList[7],31)
-
-
-
-function toggleTurn() {
-    if (whiteTurn) {
-        pieceList.forEach(piece => {
-            if(piece.color === "white") {
-                checkKillList.clear()
-
-                piece.turn = true
-            } else {
-                piece.turn = false
-
-            }
-        });
-
-        playerOneTurnDisplay.innerHTML = "- Your Turn"
-        playerTwoTurnDisplay.innerHTML = "<br>"
-
-
-    } else {
-        pieceList.forEach(piece => {
-            if(piece.color === "black") {
-                checkKillList.clear()
-                piece.turn = true
-            } else {
-                piece.turn = false
-
-            }
-        });
-
-        playerOneTurnDisplay.innerHTML = "<br>"
-        playerTwoTurnDisplay.innerHTML = "- Your Turn"
-
-    }
-}
+initPieces()
 
 toggleTurn()
