@@ -12,6 +12,9 @@ const playerTwoTurnDisplay = document.getElementById('player-two-turn')
 const spotList = []
 const pieceList = []
 
+// this set is used to check if any kings are in check
+let checkKillList = new Set([])
+
 let selectedPiece = null
 let moveBeingPicked = false
 
@@ -110,10 +113,18 @@ function blockHoverForAllOtherSpots(piece) {
     })
 }
 
+function blockAllPiecesDuringCheck(king) {
+    pieceList.forEach(piece => {
+        if (piece !== king && piece !== undefined && piece.color === king.color) {
+            piece.canHighlight = false
+        }
+    })
+}
+
 
 function unBlockHoverForAllOtherSpots() {
     pieceList.forEach(element => {
-            element.canHighlight = true
+            element.canHighlight = true;
     })
 }
 
@@ -124,6 +135,23 @@ function showBlockStatus() {
     });
 }
 
+
+// returns flase if none of the kings are in check. If one of them is in check it returns true.
+// this is used to check if the purple background can be removed (once king is no longer in check)
+// if turns the checkkilllist into an array, and filters out any pieces that are king if there are any.
+function isKingInCheck() {
+    result = Array.from(checkKillList).filter((piece) => {
+        if (getPieceFromSpot(piece) && getPieceFromSpot(piece).name === "king") {
+        return piece
+        }
+    })
+    
+    if (result.length === 0) {
+        return false
+    } else {
+        return true
+    }
+}
 
 class Piece {
     constructor(color,name,currentSpot,index) {
@@ -180,6 +208,7 @@ class Piece {
         this.PickSpotCallback = function() {
             this.pickSpot()
         }
+
     }
 
     repositionPieces() {
@@ -237,10 +266,9 @@ class Piece {
             if (this.nextMoveSpot !== undefined) {
                 // kill logic
                 let killMoveLeft = returnSpotFromCoords(this.nextMoveSpot.xIndex,this.nextMoveSpot.yIndex -1)
-                let killMoveMiddle = this.nextMoveSpot
                 let killMoveRight = returnSpotFromCoords(this.nextMoveSpot.xIndex,this.nextMoveSpot.yIndex + 1)
 
-                let pawnKillMoves = [killMoveLeft,killMoveMiddle,killMoveRight]
+                let pawnKillMoves = [killMoveLeft,killMoveRight]
 
                 // first turn kill logic
                 if (this.timesMoved < 1) {
@@ -276,10 +304,9 @@ class Piece {
             if (this.nextMoveSpot !== undefined) {
                 // kill logic
                 let killMoveLeft = returnSpotFromCoords(this.nextMoveSpot.xIndex,this.nextMoveSpot.yIndex -1)
-                let killMoveMiddle = this.nextMoveSpot
                 let killMoveRight = returnSpotFromCoords(this.nextMoveSpot.xIndex,this.nextMoveSpot.yIndex + 1)
 
-                let pawnKillMoves = [killMoveLeft,killMoveMiddle,killMoveRight]
+                let pawnKillMoves = [killMoveLeft,killMoveRight]
 
                 // first turn kill logic
                 if (this.timesMoved < 1) {
@@ -671,11 +698,30 @@ class Piece {
 
         killLogic(possibleMoves) {
             // kill logic
+
             possibleMoves.forEach(element => {
                 if (element !== undefined && getPieceFromSpot(element) && getPieceFromSpot(element).color !== this.color) {
                     this.killMoves.add(element)
+                    checkKillList.add(element)
                 }
             });
+
+            // logic to see if any king is in check
+            checkKillList.forEach(spot => {
+                if (getPieceFromSpot(spot) && getPieceFromSpot(spot).name === "king") {
+                    getPieceFromSpot(spot).pieceDiv.style.backgroundColor = 'purple'
+                } 
+            });
+
+            // if no kings are in check, remove purple background from all kings
+            if(isKingInCheck() === false) {
+                pieceList.forEach((piece) => {
+                    if (piece && piece.name === 'king') {
+                        piece.pieceDiv.style.backgroundColor = ""
+                    }
+                })
+            }
+
 
             this.killMoves.forEach(element => {
                 let newKillSpot = document.createElement('div')
@@ -837,38 +883,38 @@ const blackBishop2 = new Piece('black', 'bishop', spotList[6],30)
 const blackRook2 = new Piece('black', 'rook', spotList[7],31)
 
 
-function check() {
-// 
-}
 
 function toggleTurn() {
     if (whiteTurn) {
         pieceList.forEach(piece => {
             if(piece.color === "white") {
+                checkKillList.clear()
+
                 piece.turn = true
             } else {
                 piece.turn = false
+
             }
         });
 
         playerOneTurnDisplay.innerText = "- Your Turn"
         playerTwoTurnDisplay.innerText = ""
 
-        check()
 
     } else {
         pieceList.forEach(piece => {
             if(piece.color === "black") {
+                checkKillList.clear()
                 piece.turn = true
             } else {
                 piece.turn = false
+
             }
         });
 
         playerOneTurnDisplay.innerText = ""
         playerTwoTurnDisplay.innerText = "- Your Turn"
 
-        check()
     }
 }
 
