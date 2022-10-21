@@ -1,0 +1,467 @@
+:root {
+--piece-width: 90px;
+--piece-height: 90px;
+
+--piece-container-width: 100px;
+--piece-container-height: 100px;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#title {
+    font-family: 'Cinzel Decorative';
+    font-size: 22px;
+    padding: 10px;
+}
+
+#title > h1 {
+    padding: 0;
+    margin: 0;
+}
+
+#board-div {
+    border: 2px;
+    border-color: blanchedalmond;
+    border-style: solid;
+    min-width: 800px;
+    max-width: 800px;
+    min-height: 800px;
+    max-height: 800px;
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#main-div {
+    display: flex;
+}
+
+#main-hud-div {
+    display:flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: white;
+    font-size: 14px;
+}
+
+#player-one-hud {
+    width: 70%;
+    height: 50%;
+    padding: 10px;
+    border-top-style: solid;
+    border-top-color: white;
+    border-top-width: 7.5px;
+    background-color: blanchedalmond;
+
+}
+
+#player-two-hud {
+    width: 70%;
+    height: 50%;
+    padding: 10px;
+    border-bottom-style: solid;
+    border-bottom-color: white;
+    border-bottom-width: 7.5px;
+    background-color: blanchedalmond;
+
+}
+
+#player-one-turn {
+    color: green;
+}
+
+#player-two-turn {
+    color: green;
+}
+
+#main-chat-div {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#chat-box {
+    width: 70%;
+    height: 80%;
+}
+
+#chat-title {
+    font-family: 'Cinzel Decorative';
+}
+
+#chat-title > h2 {
+    margin: 0;
+    padding: 0;
+}
+
+#main-chat-div > button {
+    background-color: green;
+    color: white;
+    margin: 10px;
+    width: 80px;
+    height: 30px;
+    border-style: none;
+    font-weight: bold;
+}
+
+/* Black Pieces */
+#blackpawn {
+    width: var(--piece-width);
+    height: var(--piece-width);
+    background-image: url('images/blackpawn.png');
+    border-width: 0;
+}
+
+#blackpawn:hover {
+    border-color: white;
+    border-width: 2px;
+    border-style: inset;
+    background-color: brown;
+}
+
+#blackpawncontainer {
+    width: var(--piece-container-width);
+    height: var(--piece-container-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+}
+
+
+
+#blackrook {
+    width: var(--piece-width);
+    height: var(--piece-width);
+    background-image: url('images/blackrook.png');
+    border-width: 0;
+}
+
+#blackrook:hover {
+    border-color: white;
+    border-width: 2px;
+    border-style: inset;
+    background-color: brown;
+
+}
+
+#blackrookcontainer {
+    width: var(--piece-container-width);
+    height: var(--piece-container-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+}
+
+
+
+#blackknight {
+    width: var(--piece-width);
+    height: var(--piece-width);
+    background-image: url('images/blackknight.png');
+    border-width: 0;
+}
+
+#blackknight:hover {
+    border-color: white;
+    border-width: 2px;
+    border-style: inset;
+    background-color: brown;
+}
+
+#blackknightcontainer {
+    width: var(--piece-container-width);
+    height: var(--piece-container-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+}
+
+
+
+#blackbishop {
+    width: var(--piece-width);
+    height: var(--piece-width);
+    background-image: url('images/blackbishop.png');
+    border-width: 0;
+}
+
+#blackbishop:hover {
+    border-color: white;
+    border-width: 2px;
+    border-style: inset;
+    background-color: brown;
+}
+
+#blackbishopcontainer {
+    width: var(--piece-container-width);
+    height: var(--piece-container-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+}
+
+
+
+#blackqueen {
+    width: var(--piece-width);
+    height: var(--piece-width);
+    background-image: url('images/blackqueen.png');
+    border-width: 0;
+}
+
+#blackqueen:hover {
+    border-color: white;
+    border-width: 2px;
+    border-style: inset;
+    background-color: brown;
+}
+
+#blackqueencontainer {
+    width: var(--piece-container-width);
+    height: var(--piece-container-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+}
+
+
+
+#blackking {
+    width: var(--piece-width);
+    height: var(--piece-width);
+    background-image: url('images/blackking.png');
+    border-width: 0;
+}
+
+#blackking:hover {
+    border-color: white;
+    border-width: 2px;
+    border-style: inset;
+    background-color: brown;
+}
+
+#blackkingcontainer {
+    width: var(--piece-container-width);
+    height: var(--piece-container-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+}
+
+
+
+/* White Pieces */
+
+#whitepawn {
+    width: var(--piece-width);
+    height: var(--piece-width);
+    background-image: url('images/whitepawn.png');
+    border-width: 0;
+}
+
+#whitepawn:hover {
+    border-color: white;
+    border-width: 2px;
+    border-style: inset;
+    background-color: brown;
+}
+
+#whitepawncontainer {
+    width: var(--piece-container-width);
+    height: var(--piece-container-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+}
+
+
+
+#whiterook {
+    width: var(--piece-width);
+    height: var(--piece-width);
+    background-image: url('images/whiterook.png');
+    border-width: 0;
+}
+
+#whiterook:hover {
+    border-color: white;
+    border-width: 2px;
+    border-style: inset;
+    background-color: brown;
+}
+
+#whiterookcontainer {
+    width: var(--piece-container-width);
+    height: var(--piece-container-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+}
+
+
+
+#whiteknight {
+    width: var(--piece-width);
+    height: var(--piece-width);
+    background-image: url('images/whiteknight.png');
+    border-width: 0;
+}
+
+#whiteknight:hover {
+    border-color: white;
+    border-width: 2px;
+    border-style: inset;
+    background-color: brown;
+}
+
+#whiteknightcontainer {
+    width: var(--piece-container-width);
+    height: var(--piece-container-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+}
+
+
+
+#whitebishop {
+    width: var(--piece-width);
+    height: var(--piece-width);
+    background-image: url('images/whitebishop.png');
+    border-width: 0;
+}
+
+#whitebishop:hover {
+    border-color: white;
+    border-width: 2px;
+    border-style: inset;
+    background-color: brown;
+}
+
+#whitebishopcontainer {
+    width: var(--piece-container-width);
+    height: var(--piece-container-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+}
+
+
+
+#whitequeen {
+    width: var(--piece-width);
+    height: var(--piece-width);
+    background-image: url('images/whitequeen.png');
+    border-width: 0;
+}
+
+#whitequeen:hover {
+    border-color: white;
+    border-width: 2px;
+    border-style: inset;
+    background-color: brown;
+}
+
+#whitequeencontainer {
+    width: var(--piece-container-width);
+    height: var(--piece-container-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+}
+
+
+
+#whiteking {
+    width: var(--piece-width);
+    height: var(--piece-width);
+    background-image: url('images/whiteking.png');
+    border-width: 0;
+}
+
+#whiteking:hover {
+    border-color: white;
+    border-width: 2px;
+    border-style: inset;
+    background-color: brown;
+}
+
+#whitekingcontainer {
+    width: var(--piece-container-width);
+    height: var(--piece-container-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+}
+
+.odd-spot {
+    background-color: seashell;
+    width: 100px;
+    height: 100px;
+}
+
+
+.even-spot {
+    background-color: blanchedalmond;
+    width: 100px;
+    height: 100px;
+}
+
+.selected {
+    background-color: green !important;
+}
+
+.new-spot-button {
+    background-color: orange;
+    border-style: solid;
+    border-color: blanchedalmond;
+    width: 100px;
+    height: 100px;
+    position: relative;
+}
+
+.kill-spot {
+    position: absolute;
+    border-color: red;
+    border-style: dashed;
+    border-width: 4px;
+    width: 92px;
+    height: 92px;
+    z-index: 1000;
+}
+
+.kill-spot:hover {
+    background-color: rgba(255, 0, 0, 0.7);
+}
+
+#dead-black-pieces {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+#dead-white-pieces {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}

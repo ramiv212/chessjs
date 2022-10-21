@@ -1,4 +1,7 @@
 const app = document.getElementById('app')
+const gameID = document.getElementById('gameID').innerText
+
+console.log(gameID)
 
 // dialog box for upgrading pawn
 const dialogBox = document.getElementById('pawnUpdate');
@@ -15,48 +18,48 @@ const spotList = []
 let pieceList = []
 
 
-function initPieces () {
+function initPieces (gameState) {
     // init white pawns
-    const whitePawn1 = new Piece('white', 'pawn', spotList[48],0)
-    const whitePawn2 = new Piece('white', 'pawn', spotList[49],1)
-    const whitePawn3 = new Piece('white', 'pawn', spotList[50],2)
-    const whitePawn4 = new Piece('white', 'pawn', spotList[51],3)
-    const whitePawn5 = new Piece('white', 'pawn', spotList[52],4)
-    const whitePawn6 = new Piece('white', 'pawn', spotList[53],5)
-    const whitePawn7 = new Piece('white', 'pawn', spotList[54],6)
-    const whitePawn8 = new Piece('white', 'pawn', spotList[55],7)
+    let whitePawn1 = new Piece('white', 'pawn',     spotList[gameState.whitePawn1.position],0,'whitePawn1')
+    let whitePawn2 = new Piece('white', 'pawn',     spotList[gameState.whitePawn2.position],1,'whitePawn2')
+    let whitePawn3 = new Piece('white', 'pawn',     spotList[gameState.whitePawn3.position],2,'whitePawn3')
+    let whitePawn4 = new Piece('white', 'pawn',     spotList[gameState.whitePawn4.position],3,'whitePawn4')
+    let whitePawn5 = new Piece('white', 'pawn',     spotList[gameState.whitePawn5.position],4,'whitePawn5')
+    let whitePawn6 = new Piece('white', 'pawn',     spotList[gameState.whitePawn6.position],5,'whitePawn6')
+    let whitePawn7 = new Piece('white', 'pawn',     spotList[gameState.whitePawn7.position],6,'whitePawn7')
+    let whitePawn8 = new Piece('white', 'pawn',     spotList[gameState.whitePawn8.position],7,'whitePawn8')
 
     // init white specials
-    const whiteRook1 = new Piece('white', 'rook', spotList[56],8)
-    const whiteBishop1 = new Piece('white', 'bishop', spotList[57],9)
-    const whiteKnight1 = new Piece('white', 'knight', spotList[58],10)
-    const whiteQueen = new Piece('white', 'queen', spotList[59],11)
-    const whiteKing = new Piece('white', 'king', spotList[60],12)
-    const whiteKnight2 = new Piece('white', 'knight', spotList[61],13)
-    const whiteBishop2 = new Piece('white', 'bishop', spotList[62],14)
-    const whiteRook2 = new Piece('white', 'rook', spotList[63],15)
+    let whiteRook1 = new Piece('white', 'rook',     spotList[gameState.whiteRook1.position],   8,  'whiteRook1')
+    let whiteBishop1 = new Piece('white', 'bishop', spotList[gameState.whiteBishop1.position], 9,  'whiteBishop1')
+    let whiteKnight1 = new Piece('white', 'knight', spotList[gameState.whiteKnight1.position], 10, 'whiteKnight1')
+    let whiteQueen = new Piece('white', 'queen',    spotList[gameState.whiteQueen.position],   11, 'whiteQueen')
+    let whiteKing = new Piece('white', 'king',      spotList[gameState.whiteKing.position],    12, 'whiteKing')
+    let whiteKnight2 = new Piece('white', 'knight', spotList[gameState.whiteKnight2.position], 13, 'whiteKnight2')
+    let whiteBishop2 = new Piece('white', 'bishop', spotList[gameState.whiteBishop2.position], 14, 'whiteBishop2')
+    let whiteRook2 = new Piece('white', 'rook',     spotList[gameState.whiteRook2.position],   15, 'whiteRook2')
 
 
 
     // init black pawns
-    const blackPawn3 = new Piece('black', 'pawn', spotList[8],16)
-    const blackPawn1 = new Piece('black', 'pawn', spotList[9],17)
-    const blackPawn2 = new Piece('black', 'pawn', spotList[10],18)
-    const blackPawn4 = new Piece('black', 'pawn', spotList[11],19)
-    const blackPawn5 = new Piece('black', 'pawn', spotList[12],20)
-    const blackPawn6 = new Piece('black', 'pawn', spotList[13],21)
-    const blackPawn7 = new Piece('black', 'pawn', spotList[14],22)
-    const blackPawn8 = new Piece('black', 'pawn', spotList[15],23)
+    let blackPawn1 = new Piece('black', 'pawn',     spotList[gameState.blackPawn1.position],16, 'blackPawn1')
+    let blackPawn2 = new Piece('black', 'pawn',     spotList[gameState.blackPawn2.position],17, 'blackPawn2')
+    let blackPawn3 = new Piece('black', 'pawn',     spotList[gameState.blackPawn3.position],18, 'blackPawn3')
+    let blackPawn4 = new Piece('black', 'pawn',     spotList[gameState.blackPawn4.position],19, 'blackPawn4')
+    let blackPawn5 = new Piece('black', 'pawn',     spotList[gameState.blackPawn5.position],20, 'blackPawn5')
+    let blackPawn6 = new Piece('black', 'pawn',     spotList[gameState.blackPawn6.position],21, 'blackPawn6')
+    let blackPawn7 = new Piece('black', 'pawn',     spotList[gameState.blackPawn7.position],22, 'blackPawn7')
+    let blackPawn8 = new Piece('black', 'pawn',     spotList[gameState.blackPawn8.position],23, 'blackPawn8')
 
     // init black specials
-    const blackRook1 = new Piece('black', 'rook', spotList[0],24)
-    const blackBishop1 = new Piece('black', 'bishop', spotList[1],25)
-    const blackKnight1 = new Piece('black', 'knight', spotList[2],26)
-    const blackQueen = new Piece('black', 'queen', spotList[3],27)
-    const blackKing = new Piece('black', 'king', spotList[4],28)
-    const blackKnight2 = new Piece('black', 'knight', spotList[5],29)
-    const blackBishop2 = new Piece('black', 'bishop', spotList[6],30)
-    const blackRook2 = new Piece('black', 'rook', spotList[7],31)
+    let blackRook1 = new Piece('black', 'rook',     spotList[gameState.blackRook1.position],  24, 'blackRook1')
+    let blackBishop1 = new Piece('black', 'bishop', spotList[gameState.blackBishop1.position],25, 'blackBishop1')
+    let blackKnight1 = new Piece('black', 'knight', spotList[gameState.blackKnight1.position],26, 'blackKnight1')
+    let blackQueen = new Piece('black', 'queen',    spotList[gameState.blackQueen.position],  27, 'blackQueen')
+    let blackKing = new Piece('black', 'king',      spotList[gameState.blackKing.position],   28, 'blackKing')
+    let blackKnight2 = new Piece('black', 'knight', spotList[gameState.blackKnight2.position],29, 'blackKnight2')
+    let blackBishop2 = new Piece('black', 'bishop', spotList[gameState.blackBishop2.position],30, 'blackBishop2')
+    let blackRook2 = new Piece('black', 'rook',     spotList[gameState.blackRook2.position],  31, 'blackRook2')
 }
 
 
@@ -82,6 +85,41 @@ boardDiv.id = 'board-div';
 
 
 // game functions
+
+async function gameStart() {
+    let response = fetch('/gameState/' + gameID)
+    .then((data) => data.json())
+    .then((json) => {
+        console.log(json)
+        initPieces(json)
+        toggleTurn()
+    })
+    return response;
+}
+
+async function fetchState() {
+    let response = fetch('/gameState/' + gameID)
+    .then((data) => data.json())
+    .then((json) => {
+        console.log(json)
+        initPieces(json)
+    })
+    return response;
+}
+
+function setState (state) {
+    // construct an HTTP request
+  var xhr = new XMLHttpRequest();
+  xhr.open(form.method, form.action, true);
+  xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+
+  // send the collected data as JSON
+  xhr.send(JSON.stringify(state));
+
+  xhr.onloadend = function () {
+    console.log(state)
+  };
+}
 
 function toggleTurn() {
     if (whiteTurn) {
@@ -278,7 +316,7 @@ function isKingInCheck() {
 }
 
 class Piece {
-    constructor(color,name,currentSpot,index) {
+    constructor(color,name,currentSpot,index,camelCaseName) {
         this.name = name;
         this.color = color;
         this.selected = false;
@@ -290,6 +328,7 @@ class Piece {
         this.timesMoved = 0
         this.turn = false
         this.dead = false
+        this.camelCaseName = camelCaseName
 
         // add all pieces to pieceList
         pieceList.push(this)
@@ -512,7 +551,7 @@ class Piece {
         }
     }
 
-    pickSpot(index) {
+    async pickSpot(index) {
 
         selectedPiece.selected = false
 
@@ -523,13 +562,36 @@ class Piece {
             element.spotDiv.style.backgroundColor = ""
         });
 
-        // update the selected piece currentSpot to newly picked spot
-        selectedPiece.currentSpot = spotList[index]
-        selectedPiece.currentSpot.blocked = true
+        // // update the selected piece currentSpot to newly picked spot
+        // selectedPiece.currentSpot = spotList[index]
+        // selectedPiece.currentSpot.blocked = true
 
-        // position piece via x and y coords
-        selectedPiece.containerDiv.style.top = selectedPiece.currentSpot.position.top + 'px';
-        selectedPiece.containerDiv.style.left = selectedPiece.currentSpot.position.left + 'px'
+        // // position piece via x and y coords
+        // selectedPiece.containerDiv.style.top = selectedPiece.currentSpot.position.top + 'px';
+        // selectedPiece.containerDiv.style.left = selectedPiece.currentSpot.position.left + 'px'
+
+        // get the state from the server, then make adjustment to it and send it back to server
+        fetch('/gameState/' + gameID)
+            .then((data) => data.json())
+            .then((json) => {
+                let newState = json
+                newState[selectedPiece.camelCaseName].position = index
+
+                // send the updated state to server
+                let xhr = new XMLHttpRequest();
+                xhr.open("POST", '/gameState/' + gameID);
+
+                xhr.setRequestHeader("Accept", "application/json");
+                xhr.setRequestHeader("Content-Type", "application/json");
+
+                xhr.onload = () => {
+                    fetchState()
+                };
+
+                let data = JSON.stringify(newState)
+
+                xhr.send(data);
+            })
 
         moveBeingPicked = false
         selectedPiece.pieceDiv.className = ""
@@ -955,7 +1017,5 @@ for (let index = 0; index < 64; index++) {
     }
 }
 
+gameStart()
 
-initPieces()
-
-toggleTurn()
