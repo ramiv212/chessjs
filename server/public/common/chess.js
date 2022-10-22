@@ -955,7 +955,6 @@ for (let index = 0; index < 64; index++) {
     }
 }
 
-
 initPieces()
 
 toggleTurn()

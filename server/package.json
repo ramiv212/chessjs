@@ -26,5 +26,8 @@
     "url": "https://github.com/ramiv212/chessjs/issues"
   },
   "homepage": "https://github.com/ramiv212/chessjs#readme",
-  "description": ""
+  "description": "",
+  "bin": {
+    "server": "./cli.js"
+  }
 }

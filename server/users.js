@@ -10,7 +10,6 @@ class User {
 
 const createUser = (userName,userID) => {
     let newUser = new User(userName,userID);
-    loggedInUsers.push(newUser)
     
     return newUser
 }

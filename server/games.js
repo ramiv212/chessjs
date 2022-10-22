@@ -3,12 +3,12 @@ let activeGames = []
 let newGameCounter = 0
 
 class Game {
-    constructor(gameID) {
+    constructor(gameID, player1, player2) {
 
         this.gameID = gameID
 
-        this.player1 = null
-        this.player2 = null
+        this.player1 = player1
+        this.player2 = player2
 
         this.state = {
             "whitePawn1":   {position: 48, dead: false},
@@ -53,10 +53,9 @@ class Game {
 
 
 // check if there are two active users to start a game
-function beginNewGame(user) {
-    let newGame = new Game(newGameCounter)
+function beginNewGame(player1,player2) {
+    let newGame = new Game(newGameCounter,player1,player2)
     activeGames.push(newGame)
-    activeGames.player1 = user
 
     return newGame
 }
