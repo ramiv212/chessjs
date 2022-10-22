@@ -14,49 +14,61 @@ const deadBlackPiecesDiv = document.getElementById('dead-black-pieces')
 const spotList = []
 let pieceList = []
 
+let state = null
 
-function initPieces () {
+socket.on('player-info',(info) => {
+    if (info !== null) {
+        console.log(info)
+        document.getElementById('player-one-name').innerText = info.player1.name
+        document.getElementById('player-two-name').innerText = info.player2.name
+    }
+})
+
+
+function initPieces (state) {
+
     // init white pawns
-    const whitePawn1 = new Piece('white', 'pawn', spotList[48],0)
-    const whitePawn2 = new Piece('white', 'pawn', spotList[49],1)
-    const whitePawn3 = new Piece('white', 'pawn', spotList[50],2)
-    const whitePawn4 = new Piece('white', 'pawn', spotList[51],3)
-    const whitePawn5 = new Piece('white', 'pawn', spotList[52],4)
-    const whitePawn6 = new Piece('white', 'pawn', spotList[53],5)
-    const whitePawn7 = new Piece('white', 'pawn', spotList[54],6)
-    const whitePawn8 = new Piece('white', 'pawn', spotList[55],7)
+    let whitePawn1 = new Piece('white', 'pawn', 'whitePawn1', spotList[state.whitePawn1.position],0)
+    let whitePawn2 = new Piece('white', 'pawn', 'whitePawn2', spotList[state.whitePawn2.position],1)
+    let whitePawn3 = new Piece('white', 'pawn', 'whitePawn3', spotList[state.whitePawn3.position],2)
+    let whitePawn4 = new Piece('white', 'pawn', 'whitePawn4', spotList[state.whitePawn4.position],3)
+    let whitePawn5 = new Piece('white', 'pawn', 'whitePawn5', spotList[state.whitePawn5.position],4)
+    let whitePawn6 = new Piece('white', 'pawn', 'whitePawn6', spotList[state.whitePawn6.position],5)
+    let whitePawn7 = new Piece('white', 'pawn', 'whitePawn7', spotList[state.whitePawn7.position],6)
+    let whitePawn8 = new Piece('white', 'pawn', 'whitePawn8', spotList[state.whitePawn8.position],7)
 
     // init white specials
-    const whiteRook1 = new Piece('white', 'rook', spotList[56],8)
-    const whiteBishop1 = new Piece('white', 'bishop', spotList[57],9)
-    const whiteKnight1 = new Piece('white', 'knight', spotList[58],10)
-    const whiteQueen = new Piece('white', 'queen', spotList[59],11)
-    const whiteKing = new Piece('white', 'king', spotList[60],12)
-    const whiteKnight2 = new Piece('white', 'knight', spotList[61],13)
-    const whiteBishop2 = new Piece('white', 'bishop', spotList[62],14)
-    const whiteRook2 = new Piece('white', 'rook', spotList[63],15)
+    let whiteRook1 = new Piece('white', 'rook',     'whiteRook1',  spotList[state.whiteRook1.position],8)
+    let whiteBishop1 = new Piece('white', 'bishop', 'whiteBishop1',spotList[state.whiteBishop1.position],9)
+    let whiteKnight1 = new Piece('white', 'knight', 'whiteKnight1',spotList[state.whiteKnight1.position],10)
+    let whiteQueen = new Piece('white', 'queen',    'whiteQueen',  spotList[state.whiteQueen.position],11)
+    let whiteKing = new Piece('white', 'king',      'whiteKing',   spotList[state.whiteKing.position],12)
+    let whiteKnight2 = new Piece('white', 'knight', 'whiteKnight2',spotList[state.whiteKnight2.position],13)
+    let whiteBishop2 = new Piece('white', 'bishop', 'whiteBishop2',spotList[state.whiteBishop2.position],14)
+    let whiteRook2 = new Piece('white', 'rook',     'whiteRook2',  spotList[state.whiteRook2.position],15)
 
 
 
     // init black pawns
-    const blackPawn3 = new Piece('black', 'pawn', spotList[8],16)
-    const blackPawn1 = new Piece('black', 'pawn', spotList[9],17)
-    const blackPawn2 = new Piece('black', 'pawn', spotList[10],18)
-    const blackPawn4 = new Piece('black', 'pawn', spotList[11],19)
-    const blackPawn5 = new Piece('black', 'pawn', spotList[12],20)
-    const blackPawn6 = new Piece('black', 'pawn', spotList[13],21)
-    const blackPawn7 = new Piece('black', 'pawn', spotList[14],22)
-    const blackPawn8 = new Piece('black', 'pawn', spotList[15],23)
+    let blackPawn1 = new Piece('black', 'pawn', 'blackPawn1', spotList[state.blackPawn1.position],16)
+    let blackPawn2 = new Piece('black', 'pawn', 'blackPawn2', spotList[state.blackPawn2.position],17)
+    let blackPawn3 = new Piece('black', 'pawn', 'blackPawn3', spotList[state.blackPawn3.position],18)
+    let blackPawn4 = new Piece('black', 'pawn', 'blackPawn4', spotList[state.blackPawn4.position],19)
+    let blackPawn5 = new Piece('black', 'pawn', 'blackPawn5', spotList[state.blackPawn5.position],20)
+    let blackPawn6 = new Piece('black', 'pawn', 'blackPawn6', spotList[state.blackPawn6.position],21)
+    let blackPawn7 = new Piece('black', 'pawn', 'blackPawn7', spotList[state.blackPawn7.position],22)
+    let blackPawn8 = new Piece('black', 'pawn', 'blackPawn8', spotList[state.blackPawn8.position],23)
 
     // init black specials
-    const blackRook1 = new Piece('black', 'rook', spotList[0],24)
-    const blackBishop1 = new Piece('black', 'bishop', spotList[1],25)
-    const blackKnight1 = new Piece('black', 'knight', spotList[2],26)
-    const blackQueen = new Piece('black', 'queen', spotList[3],27)
-    const blackKing = new Piece('black', 'king', spotList[4],28)
-    const blackKnight2 = new Piece('black', 'knight', spotList[5],29)
-    const blackBishop2 = new Piece('black', 'bishop', spotList[6],30)
-    const blackRook2 = new Piece('black', 'rook', spotList[7],31)
+    let blackRook1 = new Piece('black', 'rook',     'blackRook1',   spotList[state.blackRook1.position],24)
+    let blackBishop1 = new Piece('black', 'bishop', 'blackBishop1', spotList[state.blackBishop1.position],25)
+    let blackKnight1 = new Piece('black', 'knight', 'blackKnight1', spotList[state.blackKnight1.position],26)
+    let blackQueen = new Piece('black', 'queen',    'blackQueen',   spotList[state.blackQueen.position],27)
+    let blackKing = new Piece('black', 'king',      'blackKing',    spotList[state.blackKing.position],28)
+    let blackKnight2 = new Piece('black', 'knight', 'blackKnight2', spotList[state.blackKnight2.position],29)
+    let blackBishop2 = new Piece('black', 'bishop', 'blackBishop2', spotList[state.blackBishop2.position],30)
+    let blackRook2 = new Piece('black', 'rook',     'blackRook2',   spotList[state.blackRook2.position],31)
+
 }
 
 
@@ -278,9 +290,10 @@ function isKingInCheck() {
 }
 
 class Piece {
-    constructor(color,name,currentSpot,index) {
-        this.name = name;
+    constructor(color,name,camelCaseName,currentSpot,index) {
         this.color = color;
+        this.name = name;
+        this.camelCaseName = camelCaseName;
         this.selected = false;
         this.index = index
         this.currentSpot = currentSpot
@@ -553,6 +566,22 @@ class Piece {
         whiteTurn = (!whiteTurn)
         toggleTurn()
 
+        socket.emit('gameState')
+        state = socket.on('returnGameState', (state) => {
+            console.log(state)
+            console.log(state[selectedPiece.camelCaseName])
+            state[selectedPiece.camelCaseName].position = index
+            console.log(state[selectedPiece.camelCaseName])
+            socket.emit(selectedPiece.color + 'Move', state)
+
+            socket.on('updateGameState', (state) => {
+                console.log('ran updategamestate')
+                initPieces(state)
+            })
+        })
+
+        // client
+        // socket.emit(this.color + 'Move',)
     }
 
     rookLogic() {
@@ -955,6 +984,13 @@ for (let index = 0; index < 64; index++) {
     }
 }
 
-initPieces()
 
-toggleTurn()
+socket.on('gameStart', (state) => {
+    
+    initPieces(state)
+    console.log(pieceList)
+
+    toggleTurn()
+
+})
+

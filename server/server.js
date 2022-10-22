@@ -29,49 +29,70 @@ server.listen(3000, () => {
 
 
 
-function canGameStart(newUser) {
-  // if there is one person already logged in, then pop that person out of the list
-  // then take the newly logged in person and create a new game with the two
-  if (loggedInUsers.length > 0) {
-    let player1 = loggedInUsers.pop()
-    let player2 = newUser
+function canGameStart(socket) {
+  if (loggedInUsers.length > 1) {
+    let user1 = loggedInUsers.pop()
+    let user2 = loggedInUsers.pop()
 
-    beginNewGame(player1,player2)
-    console.log(activeGames)
+    user1.color = 'white'
+    user2.color = 'black'
 
-    io.to(player1.id).emit('join-game', {
-      "ememyID": player2.id,
-      "enemyName": player2.name
-    })
+    let newGame = beginNewGame(user1,user2)
 
-    io.to(player1.id).emit('join-game', {
-      "ememyID": player1.id,
-      "enemyName": player1.name
-    })
+    if (newGame) {
+      let infoObject = {
+        "player1": {"id": newGame.player1.userID,
+                  "name": newGame.player1.userName,
+                 "color": newGame.player1.color},
+        "player2": {"id": newGame.player2.userID,
+                  "name": newGame.player2.userName,
+                 "color": newGame.player2.color},
+                 "state": newGame.state,
+      }
+
+      io.sockets.emit('player-info', infoObject)
+      io.sockets.emit('gameStart',newGame.state)
+
+    }
+
+    return newGame
 
   } else {
-    loggedInUsers.push(newUser)
-
+    return null
   }
 }
-
-
 
 app.get('/', (req, res) => {
   res.render('index')
 })
 
+let newUserName = null
+
 app.post("/login", (req, res) => {
-  let userName = req.body.username
+  newUserName = req.body.username
   res.render('chess')
+  });
 
-    // server-side
-  io.on("connection", (socket) => {
-    console.log(socket.id)
-    newUser = createUser(userName,socket.id)
-    console.log(newUser)
 
-    canGameStart(newUser)
-    });
+io.on("connection", (socket) => {
+  console.log(socket.id,newUserName)
 
+  newUser = createUser(newUserName,socket.id)
+  loggedInUsers.push(newUser)
+
+  let game = canGameStart()
+
+    if (game) {
+      console.log(game.state)
+    }
+
+  socket.on('gameState', () => {
+    socket.emit('returnGameState',game.state)
+  })
+  
+  socket.on('whiteMove', (state) => {
+    console.log(state)
+    io.sockets.emit('updateGameState', state)
+  })
+  
   });

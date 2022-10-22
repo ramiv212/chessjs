@@ -1,16 +1,15 @@
 let loggedInUsers = []
 
 class User {
-    constructor(userName,userID) {
+    constructor(userName,userID,color) {
         this.userID = userID
         this.userName = userName
-        this.waitingForGame = true
+        this.color = null
     }
 }
 
 const createUser = (userName,userID) => {
-    let newUser = new User(userName,userID);
-    
+    let newUser = new User(userName,userID);    
     return newUser
 }
 
