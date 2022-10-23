@@ -1,7 +1,7 @@
 let loggedInUsers = []
 
 class User {
-    constructor(userName,userID,color) {
+    constructor(userName,userID,game) {
         this.userID = userID
         this.userName = userName
         this.color = null

@@ -1,7 +1,5 @@
 let activeGames = []
 
-let newGameCounter = 0
-
 class Game {
     constructor(gameID, player1, player2) {
 
@@ -43,17 +41,29 @@ class Game {
             "blackKnight2": {position: 5,  dead: false},
             "blackBishop2": {position: 6,  dead: false},
             "blackRook2":   {position: 7,  dead: false},
+            "player1id":      {id: player1},
+            "player2id":      {id: player1},
+            "whiteTurn":    true,
+            "gameID":       gameID
         }
     }
+    
+    set setState(newState) {
+        this.state = newState
+    }
 
-    updateState(request) {
-        this.state = request
+    get getState() {
+        return this.state
+    }
+
+    toggleTurn() {
+        this.state.whiteTurn = (!(this.state.whiteTurn))
     }
 }
 
 
 // check if there are two active users to start a game
-function beginNewGame(player1,player2) {
+function beginNewGame(newGameCounter,player1,player2) {
     let newGame = new Game(newGameCounter,player1,player2)
     activeGames.push(newGame)
 
@@ -61,4 +71,4 @@ function beginNewGame(player1,player2) {
 }
 
 
-module.exports = {beginNewGame, activeGames, newGameCounter}
+module.exports = {beginNewGame, activeGames}

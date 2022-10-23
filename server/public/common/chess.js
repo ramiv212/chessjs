@@ -14,18 +14,30 @@ const deadBlackPiecesDiv = document.getElementById('dead-black-pieces')
 const spotList = []
 let pieceList = []
 
-let state = null
+let whiteTurn = true
+
+let amIwhite = null
+
+let gameID = null
 
 socket.on('player-info',(info) => {
     if (info !== null) {
-        console.log(info)
         document.getElementById('player-one-name').innerText = info.player1.name
         document.getElementById('player-two-name').innerText = info.player2.name
+    }
+
+    //  check if current player is player one (white)
+    if (document.getElementById('myUserName').innerText === info.player1.name) {
+        amIwhite = true
+    } else {
+        amIwhite = false
     }
 })
 
 
 function initPieces (state) {
+    removeAllPieces()
+    pieceList = []
 
     // init white pawns
     let whitePawn1 = new Piece('white', 'pawn', 'whitePawn1', spotList[state.whitePawn1.position],0)
@@ -69,6 +81,17 @@ function initPieces (state) {
     let blackBishop2 = new Piece('black', 'bishop', 'blackBishop2', spotList[state.blackBishop2.position],30)
     let blackRook2 = new Piece('black', 'rook',     'blackRook2',   spotList[state.blackRook2.position],31)
 
+    pieceList.push(whitePawn1,whitePawn2,whitePawn3,whitePawn4,whitePawn5,whitePawn6,whitePawn7,whitePawn8,
+                    whiteRook1,whiteBishop1,whiteKnight1,whiteQueen,whiteKing,whiteKnight2,whiteBishop2,whiteRook2,
+                    blackPawn1,blackPawn2,blackPawn3,blackPawn4,blackPawn5,blackPawn6,blackPawn7,blackPawn8,
+                    blackRook1,blackBishop1,blackKnight1,blackQueen,blackKing,blackKnight2,blackBishop2,blackRook2,
+                    )
+    
+    whiteTurn = state.whiteTurn
+
+    gameID = state.gameID
+    
+    toggleTurn(state.whiteTurn)
 }
 
 
@@ -77,8 +100,6 @@ let checkKillList = new Set([])
 
 let selectedPiece = null
 let moveBeingPicked = false
-
-let whiteTurn = true
 
 // check if window is resized
 window.addEventListener('resize', (e) => {
@@ -95,8 +116,9 @@ boardDiv.id = 'board-div';
 
 // game functions
 
-function toggleTurn() {
-    if (whiteTurn) {
+function toggleTurn(isWhite) {
+    console.log(isWhite)
+    if (isWhite) {
         pieceList.forEach(piece => {
             if(piece.color === "white") {
                 checkKillList.clear()
@@ -247,6 +269,13 @@ function removeDeadPiece (deadPiece) {
     }
 }
 
+function removeAllPieces() {
+    // remove all pieces from the board
+    pieceList.forEach(piece => {
+        piece.pieceDiv.remove()
+    })
+}
+
 
 function gameOver(color) {
     if (color === 'black') {
@@ -255,10 +284,7 @@ function gameOver(color) {
         alert('Black Wins!')
     }
 
-    // remove all pieces from the board
-    pieceList.forEach(piece => {
-        piece.pieceDiv.remove()
-    })
+    removeAllPieces()
 
     // remove pieces from dead areas
     deadBlackPiecesDiv.innerHTML = ""
@@ -267,7 +293,6 @@ function gameOver(color) {
     initPieces()
 
     whiteTurn = true
-    toggleTurn()
 
 }
 
@@ -303,9 +328,6 @@ class Piece {
         this.timesMoved = 0
         this.turn = false
         this.dead = false
-
-        // add all pieces to pieceList
-        pieceList.push(this)
 
         // create div and container div for piece
         this.pieceDiv = document.createElement('div')
@@ -493,9 +515,9 @@ class Piece {
         
     }
 
-    select() {  
+    select() {
 
-        if (this.turn) {
+        if (amIwhite && whiteTurn || (!amIwhite) && (!whiteTurn)) {
             clearSelected()
             this.killMoves = new Set([])
             
@@ -562,26 +584,16 @@ class Piece {
         // this is to check if pawns can move double initially
         this.timesMoved ++
 
-        // turns
-        whiteTurn = (!whiteTurn)
-        toggleTurn()
+        socket.emit('move', gameID ,state => {
 
-        socket.emit('gameState')
-        state = socket.on('returnGameState', (state) => {
-            console.log(state)
-            console.log(state[selectedPiece.camelCaseName])
             state[selectedPiece.camelCaseName].position = index
-            console.log(state[selectedPiece.camelCaseName])
-            socket.emit(selectedPiece.color + 'Move', state)
+            
+            initPieces(state)
 
-            socket.on('updateGameState', (state) => {
-                console.log('ran updategamestate')
-                initPieces(state)
-            })
-        })
+            socket.emit('updateState',gameID,state)
+            
+    })
 
-        // client
-        // socket.emit(this.color + 'Move',)
     }
 
     rookLogic() {
@@ -617,7 +629,7 @@ class Piece {
                 possibleMoves.push(nextMove[0])
             } else {
                 // check if next move is kill move
-                if(getPieceFromSpot(nextMove[0]).color !== this.color) {
+                if(getPieceFromSpot(nextMove[0]) && getPieceFromSpot(nextMove[0]).color !== this.color) {
                     this.killMoves.add(nextMove[0])
                 }
 
@@ -647,7 +659,7 @@ class Piece {
                 possibleMoves.push(nextMove[0])
             } else {
                 // check if next move is kill move
-                if(getPieceFromSpot(nextMove[0]).color !== this.color) {
+                if(getPieceFromSpot(nextMove[0]) && getPieceFromSpot(nextMove[0]).color !== this.color) {
                     this.killMoves.add(nextMove[0])
                 }
 
@@ -675,7 +687,7 @@ class Piece {
                 possibleMoves.push(nextMove[0])
             } else {
                 // check if next move is kill move
-                if(getPieceFromSpot(nextMove[0]).color !== this.color) {
+                if(getPieceFromSpot(nextMove[0]) && getPieceFromSpot(nextMove[0]).color !== this.color) {
                     this.killMoves.add(nextMove[0])
                 }
 
@@ -706,7 +718,7 @@ class Piece {
                 possibleMoves.push(nextMove[0])
             } else {
                 // check if next move is kill move
-                if(getPieceFromSpot(nextMove[0]).color !== this.color) {
+                if(getPieceFromSpot(nextMove[0]) && getPieceFromSpot(nextMove[0]).color !== this.color) {
                     this.killMoves.add(nextMove[0])
                 }
 
@@ -986,11 +998,14 @@ for (let index = 0; index < 64; index++) {
 
 
 socket.on('gameStart', (state) => {
-    
     initPieces(state)
-    console.log(pieceList)
+    toggleTurn(state.whiteTurn)
 
-    toggleTurn()
+})
+
+socket.on('updateState', (state) => {
+    removeAllPieces()
+    initPieces(state)
 
 })
 

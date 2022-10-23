@@ -1,8 +1,10 @@
 const express = require("express");
 const req = require("express/lib/request");
 const res = require("express/lib/response");
+const { instrument } = require("@socket.io/admin-ui")
+const cors = require('cors');
 
-const {beginNewGame,activeGames,newGameCounter} = require('./games')
+const {beginNewGame,activeGames} = require('./games')
 
 const {createUser,loggedInUsers} = require('./users')
 
@@ -18,9 +20,24 @@ app.use(express.urlencoded({
   extended: true
 })) // Used to parse form data
 
+
+let newGameCounter = 0
+
+
+app.use(
+  cors({
+    origin: ['https://admin.socket.io'],
+    credentials: false,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept'],
+  })
+);
+
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const io = new Server(server);
+const io = new Server(server, {
+  cors: { origin: ['https://admin.socket.io'], credentials: false },
+});
 
 
 server.listen(3000, () => {
@@ -37,7 +54,8 @@ function canGameStart(socket) {
     user1.color = 'white'
     user2.color = 'black'
 
-    let newGame = beginNewGame(user1,user2)
+    let newGame = beginNewGame(newGameCounter,user1,user2)
+    newGameCounter ++
 
     if (newGame) {
       let infoObject = {
@@ -70,7 +88,7 @@ let newUserName = null
 
 app.post("/login", (req, res) => {
   newUserName = req.body.username
-  res.render('chess')
+  res.render('chess',{'myUserName': newUserName})
   });
 
 
@@ -86,13 +104,22 @@ io.on("connection", (socket) => {
       console.log(game.state)
     }
 
-  socket.on('gameState', () => {
-    socket.emit('returnGameState',game.state)
-  })
-  
-  socket.on('whiteMove', (state) => {
+  socket.on('updateState', (gameID,state) => {
+    activeGames[gameID].setState = state
     console.log(state)
-    io.sockets.emit('updateGameState', state)
+    io.sockets.emit('updateState', activeGames[gameID].getState)
   })
   
-  });
+  socket.on('move',(gameID,cb) => {
+    activeGames[gameID].toggleTurn()
+    console.log(activeGames[gameID].getState)
+    cb(activeGames[gameID].getState)
+  })
+  
+  
+});
+
+
+
+instrument(io, { auth: false })
+
