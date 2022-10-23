@@ -35,6 +35,7 @@ app.use(
 
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+const { clear } = require("console");
 const io = new Server(server, {
   cors: { origin: ['https://admin.socket.io'], credentials: false },
 });
@@ -101,19 +102,22 @@ io.on("connection", (socket) => {
   let game = canGameStart()
 
     if (game) {
-      console.log(game.state)
+      // console.log(game.state)
     }
 
   socket.on('updateState', (gameID,state) => {
     activeGames[gameID].setState = state
-    console.log(state)
     io.sockets.emit('updateState', activeGames[gameID].getState)
   })
   
   socket.on('move',(gameID,cb) => {
     activeGames[gameID].toggleTurn()
-    console.log(activeGames[gameID].getState)
     cb(activeGames[gameID].getState)
+  })
+
+  socket.on('kill',(killedPiece,gameID,cb) => {
+    activeGames[gameID].getState[killedPiece].dead = true
+    io.sockets.emit('confirmKill',killedPiece)
   })
   
   
