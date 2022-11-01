@@ -1,5 +1,3 @@
-// TODO turn order is busted when eating
-
 const app = document.getElementById('app')
 
 // dialog box for upgrading pawn
@@ -13,6 +11,9 @@ const playerTwoTurnDisplay = document.getElementById('player-two-turn')
 const deadWhitePiecesDiv = document.getElementById('dead-white-pieces')
 const deadBlackPiecesDiv = document.getElementById('dead-black-pieces')
 
+const myID = document.getElementById('myID').innerText
+const myUserName = document.getElementById('myUserName').innerText
+
 const spotList = []
 let pieceList = []
 
@@ -22,7 +23,13 @@ let amIwhite = null
 
 let gameID = null
 
+
+// TODO because killfunc is being called in both clients, pickspot runs twice
+
 socket.on('player-info',(info) => {
+
+    console.log(info)
+
     if (info !== null) {
         document.getElementById('player-one-name').innerText = info.player1.name
         document.getElementById('player-two-name').innerText = info.player2.name
@@ -377,11 +384,6 @@ class Piece {
         this.pieceDiv.addEventListener('mouseleave', (event) => {
             this.unHighlightPossibleMoves()
         })
-
-        this.PickSpotCallback = function() {
-            this.pickSpot()
-        }
-
     }
 
     repositionPieces() {
@@ -561,6 +563,8 @@ class Piece {
     }
 
     pickSpot(index) {
+
+        console.log('pickSpot')
 
         selectedPiece.selected = false
 
@@ -893,7 +897,8 @@ class Piece {
                     // emit a socket 
                     newKillSpot.addEventListener('click',(event) => {
                         socket.emit('kill', getPieceFromSpot(element).camelCaseName, gameID)
-                        })
+                        this.pickSpot(element.index)
+                    })
                     
 
                     newKillSpot.style.top = element.position.top + 'px'
@@ -916,8 +921,6 @@ class Piece {
             // remove "blocked" from the spot
             spot.blocked = false
             this.updatePossibleMoves()
-
-            this.pickSpot(spot.index)
 
             // this will end the game
             if (deadPiece.name === 'king') {
@@ -1011,6 +1014,8 @@ for (let index = 0; index < 64; index++) {
 
 
 socket.on('gameStart', (state) => {
+    console.log('game start')
+    console.log(state)
     initPieces(state)
     toggleTurn(state.whiteTurn)
 
@@ -1019,7 +1024,6 @@ socket.on('gameStart', (state) => {
 socket.on('updateState', (state) => {
     removeAllPieces()
     initPieces(state)
-
 })
 
 // the selected piece will kill the piece returned from the socket
@@ -1030,4 +1034,8 @@ socket.on('confirmKill', (killedPiece) => {
     })
 
     selectedPiece.killFunc(killedPieceInstance[0].currentSpot)
+})
+
+socket.on('giveMeYourInfo', () => {
+    socket.emit('playerInfo',myID,myUserName )
 })

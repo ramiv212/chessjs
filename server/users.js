@@ -1,17 +1,13 @@
-let loggedInUsers = []
+let waitingUsers = []
+let playingUsers = []
 
 class User {
-    constructor(userName,userID,game) {
-        this.userID = userID
+    constructor(userName,userID) {
         this.userName = userName
+        this.userID = userID
         this.color = null
+        this.game = null
     }
 }
 
-const createUser = (userName,userID) => {
-    let newUser = new User(userName,userID);    
-    return newUser
-}
-
-
-module.exports = {loggedInUsers,createUser}
+module.exports = {User, waitingUsers, playingUsers}

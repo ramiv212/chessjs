@@ -1,12 +1,24 @@
+const {createUser,loggedInUsers} = require('./users')
+
+let waitingGames = []
 let activeGames = []
 
 class Game {
-    constructor(gameID, player1, player2) {
+    constructor(newGameCounter,player1,player2) {
 
-        this.gameID = gameID
+        this.gameID = newGameCounter
 
         this.player1 = player1
         this.player2 = player2
+
+        this.infoObject = {
+            "player1": {"id": player1.userID,
+                      "name": player1.userName,
+                     "color": 'white'},
+            "player2": {"id": player2.userID,
+                      "name": player2.userName,
+                     "color": 'black'},
+          }
 
         this.state = {
             "whitePawn1":   {position: 48, dead: false},
@@ -41,11 +53,12 @@ class Game {
             "blackKnight2": {position: 5,  dead: false},
             "blackBishop2": {position: 6,  dead: false},
             "blackRook2":   {position: 7,  dead: false},
-            "player1id":      {id: player1},
-            "player2id":      {id: player1},
+            "player1id":    null,
+            "player2id":    null,
             "whiteTurn":    true,
-            "gameID":       gameID
+            "gameID":       this.gameID
         }
+
     }
     
     set setState(newState) {
@@ -56,19 +69,17 @@ class Game {
         return this.state
     }
 
+    addPlayer1(player1) {
+        this.player1 = player1
+    }
+
+    addPlayer(player2) {
+        this.player2 = player2
+    }
+
     toggleTurn() {
         this.state.whiteTurn = (!(this.state.whiteTurn))
     }
 }
 
-
-// check if there are two active users to start a game
-function beginNewGame(newGameCounter,player1,player2) {
-    let newGame = new Game(newGameCounter,player1,player2)
-    activeGames.push(newGame)
-
-    return newGame
-}
-
-
-module.exports = {beginNewGame, activeGames}
+module.exports = {Game, waitingGames, activeGames}

@@ -1,12 +1,15 @@
 const express = require("express");
 const req = require("express/lib/request");
 const res = require("express/lib/response");
-const { instrument } = require("@socket.io/admin-ui")
+const { 
+  v4: uuidv4,
+} = require('uuid');
+
 const cors = require('cors');
 
-const {beginNewGame,activeGames} = require('./games')
+const {Game, waitingGames, activeGames} = require('./games')
+const {User, waitingUsers, playingUsers, createUser} = require('./users')
 
-const {createUser,loggedInUsers} = require('./users')
 
 const app = express();
 const http = require('http');
@@ -22,7 +25,6 @@ app.use(express.urlencoded({
 
 
 let newGameCounter = 0
-
 
 app.use(
   cors({
@@ -46,84 +48,85 @@ server.listen(3000, () => {
 });
 
 
-
-function canGameStart(socket) {
-  if (loggedInUsers.length > 1) {
-    let user1 = loggedInUsers.pop()
-    let user2 = loggedInUsers.pop()
-
-    user1.color = 'white'
-    user2.color = 'black'
-
-    let newGame = beginNewGame(newGameCounter,user1,user2)
-    newGameCounter ++
-
-    if (newGame) {
-      let infoObject = {
-        "player1": {"id": newGame.player1.userID,
-                  "name": newGame.player1.userName,
-                 "color": newGame.player1.color},
-        "player2": {"id": newGame.player2.userID,
-                  "name": newGame.player2.userName,
-                 "color": newGame.player2.color},
-                 "state": newGame.state,
-      }
-
-      io.sockets.emit('player-info', infoObject)
-      io.sockets.emit('gameStart',newGame.state)
-
-    }
-
-    return newGame
-
-  } else {
-    return null
-  }
-}
-
 app.get('/', (req, res) => {
   res.render('index')
+
 })
 
-let newUserName = null
 
 app.post("/login", (req, res) => {
-  newUserName = req.body.username
-  res.render('chess',{'myUserName': newUserName})
-  });
-
-
-io.on("connection", (socket) => {
-  console.log(socket.id,newUserName)
-
-  newUser = createUser(newUserName,socket.id)
-  loggedInUsers.push(newUser)
-
-  let game = canGameStart()
-
-    if (game) {
-      // console.log(game.state)
-    }
-
-  socket.on('updateState', (gameID,state) => {
-    activeGames[gameID].setState = state
-    io.sockets.emit('updateState', activeGames[gameID].getState)
-  })
   
-  socket.on('move',(gameID,cb) => {
-    activeGames[gameID].toggleTurn()
-    cb(activeGames[gameID].getState)
-  })
+  let newUserName = req.body.username
 
-  socket.on('kill',(killedPiece,gameID,cb) => {
-    activeGames[gameID].getState[killedPiece].dead = true
-    io.sockets.emit('confirmKill',killedPiece)
-  })
-  
-  
+  res.redirect(`/chess?username=${newUserName}&id=${uuidv4()}`)
+
 });
 
 
+app.get("/chess", (req,res) => {
 
-instrument(io, { auth: false })
+  let userName = req.query.username
+  let ID = req.query.id
 
+  res.render('chess',{myUserName: userName, myID: ID})
+
+})
+
+io.on("connection", (socket) => {
+  socket.emit('giveMeYourInfo')
+
+  socket.on('playerInfo', (playerID,playerUsername) => {
+    let newUser = new User(playerUsername,playerID)
+
+    socket.join(playerID)
+
+    waitingUsers.push(newUser)
+
+    if (waitingUsers.length > 1 ) {
+
+      let player1 = waitingUsers.pop()
+      let player2 = waitingUsers.pop()
+  
+      let newGame = new Game(newGameCounter,player1,player2)
+      activeGames.push(newGame)
+
+      io.to(player1.userID).emit('player-info', newGame.infoObject)
+      io.to(player2.userID).emit('player-info', newGame.infoObject)
+  
+      io.to(player1.userID).emit('gameStart',newGame.getState)  
+      io.to(player2.userID).emit('gameStart',newGame.getState)  
+
+    }
+
+    socket.on('updateState', (gameID,state) => {
+      let game = activeGames[gameID]
+      game.setState = state
+
+      io.to(game.player1.userID).emit('updateState', game.getState)
+      io.to(game.player2.userID).emit('updateState', game.getState)
+
+    })
+    
+    socket.on('move',(gameID,cb) => {
+      let game = activeGames[gameID]
+
+      game.toggleTurn()
+      cb(game.getState)
+      console.log(game.getState.whiteTurn)
+    })
+  
+    socket.on('kill',(killedPiece,gameID,cb) => {
+      let game = activeGames[gameID]
+
+      game.getState[killedPiece].dead = true
+
+      io.to(game.player1.userID).emit('confirmKill',killedPiece)
+      io.to(game.player2.userID).emit('confirmKill',killedPiece)
+    })
+
+  })
+
+
+
+
+});
