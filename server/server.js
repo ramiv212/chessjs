@@ -89,6 +89,7 @@ io.on("connection", (socket) => {
   
       let newGame = new Game(newGameCounter,player1,player2)
       activeGames.push(newGame)
+      newGameCounter ++
 
       io.to(player1.userID).emit('player-info', newGame.infoObject)
       io.to(player2.userID).emit('player-info', newGame.infoObject)

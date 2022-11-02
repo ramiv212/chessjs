@@ -24,7 +24,7 @@ let amIwhite = null
 let gameID = null
 
 
-// TODO because killfunc is being called in both clients, pickspot runs twice
+// TODO when player moves, the piece in the other client leaves it's container
 
 socket.on('player-info',(info) => {
 
@@ -271,9 +271,12 @@ function showBlockStatus() {
 }
 
 function removeDeadPiece (deadPiece) {
+
     deadPiece.pieceDiv.style.width = '40px'
     deadPiece.pieceDiv.style.height = '40px'
     deadPiece.pieceDiv.style.backgroundSize = 'cover'
+
+    console.log(deadPiece.pieceDiv.parentElement)
 
     deadPiece.pieceDiv.parentElement.remove()
 
@@ -292,7 +295,7 @@ function removeDeadPiece (deadPiece) {
 function removeAllPieces() {
     // remove all pieces from the board
     pieceList.forEach(piece => {
-        piece.pieceDiv.remove()
+        piece.pieceDiv.parentElement.remove()
     })
 }
 
@@ -564,8 +567,6 @@ class Piece {
 
     pickSpot(index) {
 
-        console.log('pickSpot')
-
         selectedPiece.selected = false
 
         selectedPiece.currentSpot.blocked = false
@@ -580,6 +581,8 @@ class Piece {
         selectedPiece.currentSpot.blocked = true
 
         // position piece via x and y coords
+        console.log(selectedPiece.containerDiv)
+
         selectedPiece.containerDiv.style.top = selectedPiece.currentSpot.position.top + 'px';
         selectedPiece.containerDiv.style.left = selectedPiece.currentSpot.position.left + 'px'
 
@@ -588,7 +591,6 @@ class Piece {
 
         pieceList.forEach(element => {
             element.updatePossibleMoves()
-            // todo update blocked tiles
         });
 
         clearPotentialMovesInBoard()
@@ -746,7 +748,6 @@ class Piece {
         return possibleMoves
     }
 
-    // TODO bishops can't kill top left
     bishopPieceToKillLogic(nextX,nextY){
         // bishop piece to kill logic
         if (nextX && nextY && returnSpotFromCoords(nextX,nextY)) {
@@ -906,8 +907,7 @@ class Piece {
                 })
             }
 
-        killFunc(spot) {
-            let deadPiece = getPieceFromSpot(spot)
+        async killFunc(deadPiece) {
 
             removeDeadPiece(deadPiece)
         
@@ -919,7 +919,7 @@ class Piece {
             pieceList.splice(deadPieceIndex,1)
 
             // remove "blocked" from the spot
-            spot.blocked = false
+            deadPiece.currentSpot.blocked = false
             this.updatePossibleMoves()
 
             // this will end the game
@@ -1024,6 +1024,7 @@ socket.on('gameStart', (state) => {
 socket.on('updateState', (state) => {
     removeAllPieces()
     initPieces(state)
+    console.log(state)
 })
 
 // the selected piece will kill the piece returned from the socket
@@ -1033,7 +1034,9 @@ socket.on('confirmKill', (killedPiece) => {
         return piece.camelCaseName === killedPiece;
     })
 
-    selectedPiece.killFunc(killedPieceInstance[0].currentSpot)
+    console.log(killedPieceInstance[0])
+
+    selectedPiece.killFunc(killedPieceInstance[0])
 })
 
 socket.on('giveMeYourInfo', () => {
