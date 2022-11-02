@@ -24,10 +24,8 @@ let amIwhite = null
 let gameID = null
 
 
-// TODO create an emit on the pawn convert func from the client side that changes the pawn name
-// on the server state
 
-// TODO king does not turn purple for other player when he's in check
+// TODO PawnConvert runs like 3 times
 
 socket.on('player-info',(info) => {
 
@@ -117,8 +115,6 @@ function initPieces (state) {
 
 
     toggleTurn(state.whiteTurn)
-
-
 
 }
 
@@ -429,11 +425,13 @@ class Piece {
 
     convertPawnLogic() {
         if ((this.currentSpot.xIndex === 7 && this.name === 'pawn' && this.color === 'black' && amIwhite === false) || (this.currentSpot.xIndex === 0 && this.name === 'pawn' && this.color === 'white' && amIwhite === true)) {
+            console.log('ran pawnLogic')
             // convert piece logic
             dialogBox.showModal()
             confirmBtn.onclick = () => {
-                this.name = selectEl.value.toLowerCase()
-                this.pieceDiv.style.backgroundImage = "url('images/" + this.color + this.name + ".png')"
+                // this.name = selectEl.value.toLowerCase()
+                // this.pieceDiv.style.backgroundImage = "url('images/" + this.color + this.name + ".png')"
+                socket.emit('convert', this.camelCaseName, selectEl.value.toLowerCase(), gameID)
             }
         }
     }
@@ -468,7 +466,6 @@ class Piece {
                 })
                 this.killLogic(this.killMoves)
             }
-            this.convertPawnLogic()
         }
 
         // white pawn logic
@@ -500,7 +497,6 @@ class Piece {
                 })
                 this.killLogic(this.killMoves)
             }
-            this.convertPawnLogic()
         }
         
         // rook logic
@@ -613,7 +609,6 @@ class Piece {
 
         // this is to check if pawns can move double initially
         // this.timesMoved ++
-        console.log(this.timesMoved)
 
         socket.emit('move', gameID ,state => {
             let movedPiece = state[selectedPiece.camelCaseName]
@@ -623,7 +618,7 @@ class Piece {
             socket.emit('updateState',gameID,state)
             
     })
-
+        this.convertPawnLogic()
     }
 
     rookLogic() {
@@ -893,9 +888,6 @@ class Piece {
                     // getPieceFromSpot(spot).pieceDiv.style.backgroundColor = 'purple'
 
                     socket.emit('kingInCheck', getPieceFromSpot(spot).camelCaseName,gameID)
-
-                    // TODO turn this into a socket msg that turns the state of king to 
-                    //  "in check"
                 } 
             });
 
