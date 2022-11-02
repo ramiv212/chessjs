@@ -125,6 +125,17 @@ io.on("connection", (socket) => {
       io.to(game.player2.userID).emit('confirmKill',killedPiece)
     })
 
+    socket.on('kingInCheck', (name,gameID) => {
+      let game = activeGames[gameID]
+      game.getState[name].check = true
+    })
+
+    socket.on('kingNotInCheck', (gameID) => {
+      let game = activeGames[gameID]
+      game.getState.whiteKing.check = false
+      game.getState.blackKing.check = false
+    })
+
   })
 
 
