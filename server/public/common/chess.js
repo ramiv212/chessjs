@@ -24,11 +24,9 @@ let amIwhite = null
 let gameID = null
 
 
-// TODO when player moves, the piece in the other client leaves it's container
+// TODO spots stay yellow after move
 
 socket.on('player-info',(info) => {
-
-    console.log(info)
 
     if (info !== null) {
         document.getElementById('player-one-name').innerText = info.player1.name
@@ -49,46 +47,46 @@ function initPieces (state) {
     pieceList = []
 
     // init white pawns
-    let whitePawn1 = new Piece('white', 'pawn', 'whitePawn1', spotList[state.whitePawn1.position],0,state.whitePawn1.dead)
-    let whitePawn2 = new Piece('white', 'pawn', 'whitePawn2', spotList[state.whitePawn2.position],1,state.whitePawn2.dead)
-    let whitePawn3 = new Piece('white', 'pawn', 'whitePawn3', spotList[state.whitePawn3.position],2,state.whitePawn3.dead)
-    let whitePawn4 = new Piece('white', 'pawn', 'whitePawn4', spotList[state.whitePawn4.position],3,state.whitePawn4.dead)
-    let whitePawn5 = new Piece('white', 'pawn', 'whitePawn5', spotList[state.whitePawn5.position],4,state.whitePawn5.dead)
-    let whitePawn6 = new Piece('white', 'pawn', 'whitePawn6', spotList[state.whitePawn6.position],5,state.whitePawn6.dead)
-    let whitePawn7 = new Piece('white', 'pawn', 'whitePawn7', spotList[state.whitePawn7.position],6,state.whitePawn7.dead)
-    let whitePawn8 = new Piece('white', 'pawn', 'whitePawn8', spotList[state.whitePawn8.position],7,state.whitePawn8.dead)
+    let whitePawn1 = new Piece('white', 'pawn', 'whitePawn1', spotList[state.whitePawn1.position],0,state.whitePawn1.dead, state.whitePawn1.timesMoved)
+    let whitePawn2 = new Piece('white', 'pawn', 'whitePawn2', spotList[state.whitePawn2.position],1,state.whitePawn2.dead, state.whitePawn2.timesMoved)
+    let whitePawn3 = new Piece('white', 'pawn', 'whitePawn3', spotList[state.whitePawn3.position],2,state.whitePawn3.dead, state.whitePawn3.timesMoved)
+    let whitePawn4 = new Piece('white', 'pawn', 'whitePawn4', spotList[state.whitePawn4.position],3,state.whitePawn4.dead, state.whitePawn4.timesMoved)
+    let whitePawn5 = new Piece('white', 'pawn', 'whitePawn5', spotList[state.whitePawn5.position],4,state.whitePawn5.dead, state.whitePawn5.timesMoved)
+    let whitePawn6 = new Piece('white', 'pawn', 'whitePawn6', spotList[state.whitePawn6.position],5,state.whitePawn6.dead, state.whitePawn6.timesMoved)
+    let whitePawn7 = new Piece('white', 'pawn', 'whitePawn7', spotList[state.whitePawn7.position],6,state.whitePawn7.dead, state.whitePawn7.timesMoved)
+    let whitePawn8 = new Piece('white', 'pawn', 'whitePawn8', spotList[state.whitePawn8.position],7,state.whitePawn8.dead, state.whitePawn8.timesMoved)
 
     // init white specials
-    let whiteRook1 = new Piece('white', 'rook',     'whiteRook1',  spotList[state.whiteRook1.position],8,    state.whiteRook1.dead)
-    let whiteBishop1 = new Piece('white', 'bishop', 'whiteBishop1',spotList[state.whiteBishop1.position],9,  state.whiteBishop1.dead)
-    let whiteKnight1 = new Piece('white', 'knight', 'whiteKnight1',spotList[state.whiteKnight1.position],10, state.whiteKnight1.dead)
-    let whiteQueen = new Piece('white', 'queen',    'whiteQueen',  spotList[state.whiteQueen.position],11,   state.whiteQueen.dead)
-    let whiteKing = new Piece('white', 'king',      'whiteKing',   spotList[state.whiteKing.position],12,    state.whiteKing.dead)
-    let whiteKnight2 = new Piece('white', 'knight', 'whiteKnight2',spotList[state.whiteKnight2.position],13, state.whiteKnight2.dead)
-    let whiteBishop2 = new Piece('white', 'bishop', 'whiteBishop2',spotList[state.whiteBishop2.position],14, state.whiteBishop2.dead)
-    let whiteRook2 = new Piece('white', 'rook',     'whiteRook2',  spotList[state.whiteRook2.position],15,   state.whiteRook2.dead)
+    let whiteRook1 = new Piece('white', 'rook',     'whiteRook1',  spotList[state.whiteRook1.position],8,    state.whiteRook1.dead  , state.whiteRook1.timesMoved)
+    let whiteBishop1 = new Piece('white', 'bishop', 'whiteBishop1',spotList[state.whiteBishop1.position],9,  state.whiteBishop1.dead, state.whiteBishop1.timesMoved)
+    let whiteKnight1 = new Piece('white', 'knight', 'whiteKnight1',spotList[state.whiteKnight1.position],10, state.whiteKnight1.dead, state.whiteKnight1.timesMoved)
+    let whiteQueen = new Piece('white', 'queen',    'whiteQueen',  spotList[state.whiteQueen.position],11,   state.whiteQueen.dead  , state.whiteQueen.timesMoved)
+    let whiteKing = new Piece('white', 'king',      'whiteKing',   spotList[state.whiteKing.position],12,    state.whiteKing.dead   , state.whiteKing.timesMoved)
+    let whiteKnight2 = new Piece('white', 'knight', 'whiteKnight2',spotList[state.whiteKnight2.position],13, state.whiteKnight2.dead, state.whiteKnight2.timesMoved)
+    let whiteBishop2 = new Piece('white', 'bishop', 'whiteBishop2',spotList[state.whiteBishop2.position],14, state.whiteBishop2.dead, state.whiteBishop2.timesMoved)
+    let whiteRook2 = new Piece('white', 'rook',     'whiteRook2',  spotList[state.whiteRook2.position],15,   state.whiteRook2.dead  , state.whiteRook2.timesMoved)
 
 
 
     // init black pawns
-    let blackPawn1 = new Piece('black', 'pawn', 'blackPawn1', spotList[state.blackPawn1.position],16, state.blackPawn1.dead)
-    let blackPawn2 = new Piece('black', 'pawn', 'blackPawn2', spotList[state.blackPawn2.position],17, state.blackPawn2.dead)
-    let blackPawn3 = new Piece('black', 'pawn', 'blackPawn3', spotList[state.blackPawn3.position],18, state.blackPawn3.dead)
-    let blackPawn4 = new Piece('black', 'pawn', 'blackPawn4', spotList[state.blackPawn4.position],19, state.blackPawn4.dead)
-    let blackPawn5 = new Piece('black', 'pawn', 'blackPawn5', spotList[state.blackPawn5.position],20, state.blackPawn5.dead)
-    let blackPawn6 = new Piece('black', 'pawn', 'blackPawn6', spotList[state.blackPawn6.position],21, state.blackPawn6.dead)
-    let blackPawn7 = new Piece('black', 'pawn', 'blackPawn7', spotList[state.blackPawn7.position],22, state.blackPawn7.dead)
-    let blackPawn8 = new Piece('black', 'pawn', 'blackPawn8', spotList[state.blackPawn8.position],23, state.blackPawn8.dead)
+    let blackPawn1 = new Piece('black', 'pawn', 'blackPawn1', spotList[state.blackPawn1.position],16, state.blackPawn1.dead, state.blackPawn1.timesMoved)
+    let blackPawn2 = new Piece('black', 'pawn', 'blackPawn2', spotList[state.blackPawn2.position],17, state.blackPawn2.dead, state.blackPawn2.timesMoved)
+    let blackPawn3 = new Piece('black', 'pawn', 'blackPawn3', spotList[state.blackPawn3.position],18, state.blackPawn3.dead, state.blackPawn3.timesMoved)
+    let blackPawn4 = new Piece('black', 'pawn', 'blackPawn4', spotList[state.blackPawn4.position],19, state.blackPawn4.dead, state.blackPawn4.timesMoved)
+    let blackPawn5 = new Piece('black', 'pawn', 'blackPawn5', spotList[state.blackPawn5.position],20, state.blackPawn5.dead, state.blackPawn5.timesMoved)
+    let blackPawn6 = new Piece('black', 'pawn', 'blackPawn6', spotList[state.blackPawn6.position],21, state.blackPawn6.dead, state.blackPawn6.timesMoved)
+    let blackPawn7 = new Piece('black', 'pawn', 'blackPawn7', spotList[state.blackPawn7.position],22, state.blackPawn7.dead, state.blackPawn7.timesMoved)
+    let blackPawn8 = new Piece('black', 'pawn', 'blackPawn8', spotList[state.blackPawn8.position],23, state.blackPawn8.dead, state.blackPawn8.timesMoved)
 
     // init black specials
-    let blackRook1 = new Piece('black', 'rook',     'blackRook1',   spotList[state.blackRook1.position],24,    state.blackRook1.dead)
-    let blackBishop1 = new Piece('black', 'bishop', 'blackBishop1', spotList[state.blackBishop1.position],25,  state.blackBishop1.dead)
-    let blackKnight1 = new Piece('black', 'knight', 'blackKnight1', spotList[state.blackKnight1.position],26,  state.blackKnight1.dead)
-    let blackQueen = new Piece('black', 'queen',    'blackQueen',   spotList[state.blackQueen.position],27,    state.blackQueen.dead)
-    let blackKing = new Piece('black', 'king',      'blackKing',    spotList[state.blackKing.position],28,     state.blackKing.dead)
-    let blackKnight2 = new Piece('black', 'knight', 'blackKnight2', spotList[state.blackKnight2.position],29,  state.blackKnight2.dead)
-    let blackBishop2 = new Piece('black', 'bishop', 'blackBishop2', spotList[state.blackBishop2.position],30,  state.blackBishop2.dead)
-    let blackRook2 = new Piece('black', 'rook',     'blackRook2',   spotList[state.blackRook2.position],31,    state.blackRook2.dead)
+    let blackRook1 = new Piece('black', 'rook',     'blackRook1',   spotList[state.blackRook1.position],24,    state.blackRook1.dead  , state.whiteRook1.timesMoved)
+    let blackBishop1 = new Piece('black', 'bishop', 'blackBishop1', spotList[state.blackBishop1.position],25,  state.blackBishop1.dead, state.whiteBishop1.timesMoved)
+    let blackKnight1 = new Piece('black', 'knight', 'blackKnight1', spotList[state.blackKnight1.position],26,  state.blackKnight1.dead, state.whiteKnight1.timesMoved)
+    let blackQueen = new Piece('black', 'queen',    'blackQueen',   spotList[state.blackQueen.position],27,    state.blackQueen.dead  , state.whiteQueen.timesMoved)
+    let blackKing = new Piece('black', 'king',      'blackKing',    spotList[state.blackKing.position],28,     state.blackKing.dead   , state.whiteKing.timesMoved)
+    let blackKnight2 = new Piece('black', 'knight', 'blackKnight2', spotList[state.blackKnight2.position],29,  state.blackKnight2.dead, state.whiteKnight2.timesMoved)
+    let blackBishop2 = new Piece('black', 'bishop', 'blackBishop2', spotList[state.blackBishop2.position],30,  state.blackBishop2.dead, state.whiteBishop2.timesMoved)
+    let blackRook2 = new Piece('black', 'rook',     'blackRook2',   spotList[state.blackRook2.position],31,    state.blackRook2.dead  , state.whiteRook2.timesMoved)
 
     let piecesToInit = [whitePawn1,whitePawn2,whitePawn3,whitePawn4,whitePawn5,whitePawn6,whitePawn7,whitePawn8,
         whiteRook1,whiteBishop1,whiteKnight1,whiteQueen,whiteKing,whiteKnight2,whiteBishop2,whiteRook2,
@@ -276,8 +274,6 @@ function removeDeadPiece (deadPiece) {
     deadPiece.pieceDiv.style.height = '40px'
     deadPiece.pieceDiv.style.backgroundSize = 'cover'
 
-    console.log(deadPiece.pieceDiv.parentElement)
-
     deadPiece.pieceDiv.parentElement.remove()
 
     deadPiece.dead = true
@@ -296,6 +292,11 @@ function removeAllPieces() {
     // remove all pieces from the board
     pieceList.forEach(piece => {
         piece.pieceDiv.parentElement.remove()
+    })
+
+    spotList.forEach(spot => {
+        spot.blocked = false;
+        spot.spotDiv.style = "";
     })
 }
 
@@ -338,7 +339,7 @@ function isKingInCheck() {
 }
 
 class Piece {
-    constructor(color,name,camelCaseName,currentSpot,index,dead) {
+    constructor(color,name,camelCaseName,currentSpot,index,dead,timesMoved) {
         this.color = color;
         this.name = name;
         this.camelCaseName = camelCaseName;
@@ -348,7 +349,7 @@ class Piece {
         this.possibleMoves = []
         this.killMoves = new Set([])
         this.canHighlight = true
-        this.timesMoved = 0
+        this.timesMoved = timesMoved
         this.turn = false
         this.dead = dead
 
@@ -581,8 +582,6 @@ class Piece {
         selectedPiece.currentSpot.blocked = true
 
         // position piece via x and y coords
-        console.log(selectedPiece.containerDiv)
-
         selectedPiece.containerDiv.style.top = selectedPiece.currentSpot.position.top + 'px';
         selectedPiece.containerDiv.style.left = selectedPiece.currentSpot.position.left + 'px'
 
@@ -601,11 +600,13 @@ class Piece {
         unBlockHoverForAllOtherSpots()
 
         // this is to check if pawns can move double initially
-        this.timesMoved ++
+        // this.timesMoved ++
+        console.log(this.timesMoved)
 
         socket.emit('move', gameID ,state => {
-
-            state[selectedPiece.camelCaseName].position = index
+            let movedPiece = state[selectedPiece.camelCaseName]
+            movedPiece.position = index
+            movedPiece.timesMoved ++
             
             socket.emit('updateState',gameID,state)
             
@@ -1014,8 +1015,6 @@ for (let index = 0; index < 64; index++) {
 
 
 socket.on('gameStart', (state) => {
-    console.log('game start')
-    console.log(state)
     initPieces(state)
     toggleTurn(state.whiteTurn)
 
@@ -1024,7 +1023,6 @@ socket.on('gameStart', (state) => {
 socket.on('updateState', (state) => {
     removeAllPieces()
     initPieces(state)
-    console.log(state)
 })
 
 // the selected piece will kill the piece returned from the socket
@@ -1033,8 +1031,6 @@ socket.on('confirmKill', (killedPiece) => {
     let killedPieceInstance = pieceList.filter((piece) => {
         return piece.camelCaseName === killedPiece;
     })
-
-    console.log(killedPieceInstance[0])
 
     selectedPiece.killFunc(killedPieceInstance[0])
 })
