@@ -140,11 +140,19 @@ io.on("connection", (socket) => {
 
     socket.on('convert', (piece,newName,gameID) => {
       let game = activeGames[gameID]
-      game.getState[piece].name = newName
 
+      game.getState[piece].name = newName
+      
       io.to(game.player1.userID).emit('updateState', game.getState)
       io.to(game.player2.userID).emit('updateState', game.getState)
     })
 
+
+    socket.on('send-message', (msg,gameID) => {
+      let game = activeGames[gameID]
+
+      io.to(game.player1.userID).emit('broadcast-message', msg)
+      io.to(game.player2.userID).emit('broadcast-message', msg)
+    })
 
 });

@@ -11,8 +11,10 @@ const playerTwoTurnDisplay = document.getElementById('player-two-turn')
 const deadWhitePiecesDiv = document.getElementById('dead-white-pieces')
 const deadBlackPiecesDiv = document.getElementById('dead-black-pieces')
 
-const myID = document.getElementById('myID').innerText
-const myUserName = document.getElementById('myUserName').innerText
+const chatBox = document.getElementById('chat-box')
+const chatInput = document.getElementById('chat-input')
+const chatButton = document.getElementById('chat-button')
+
 
 const spotList = []
 let pieceList = []
@@ -25,7 +27,6 @@ let gameID = null
 
 
 
-// TODO PawnConvert runs like 3 times
 
 socket.on('player-info',(info) => {
 
@@ -35,7 +36,7 @@ socket.on('player-info',(info) => {
     }
 
     //  check if current player is player one (white)
-    if (document.getElementById('myUserName').innerText === info.player1.name) {
+    if (myUserName=== info.player1.name) {
         amIwhite = true
     } else {
         amIwhite = false
@@ -58,7 +59,7 @@ function initPieces (state) {
     let whitePawn8 = new Piece('white', state.whitePawn8.name, 'whitePawn8', spotList[state.whitePawn8.position],7,state.whitePawn8.dead, state.whitePawn8.timesMoved)
 
     // init white specials
-    let whiteRook1 = new Piece('white',   state.whitePawn1.name,     'whiteRook1',  spotList[state.whiteRook1.position],8,    state.whiteRook1.dead  , state.whiteRook1.timesMoved)
+    let whiteRook1 = new Piece('white',   state.whiteRook1.name,     'whiteRook1',  spotList[state.whiteRook1.position],8,    state.whiteRook1.dead  , state.whiteRook1.timesMoved)
     let whiteBishop1 = new Piece('white', state.whiteBishop1.name, 'whiteBishop1',  spotList[state.whiteBishop1.position],9,  state.whiteBishop1.dead, state.whiteBishop1.timesMoved)
     let whiteKnight1 = new Piece('white', state.whiteKnight1.name, 'whiteKnight1',  spotList[state.whiteKnight1.position],10, state.whiteKnight1.dead, state.whiteKnight1.timesMoved)
     let whiteQueen = new Piece('white',   state.whiteQueen.name,    'whiteQueen',   spotList[state.whiteQueen.position],11,   state.whiteQueen.dead  , state.whiteQueen.timesMoved)
@@ -80,7 +81,7 @@ function initPieces (state) {
     let blackPawn8 = new Piece('black', state.blackPawn8.name, 'blackPawn8', spotList[state.blackPawn8.position],23, state.blackPawn8.dead, state.blackPawn8.timesMoved)
 
     // init black specials
-    let blackRook1 = new Piece('black',   state.blackPawn1.name,   'blackRook1',   spotList[state.blackRook1.position],24,    state.blackRook1.dead  , state.whiteRook1.timesMoved)
+    let blackRook1 = new Piece('black',   state.blackRook1.name,   'blackRook1',   spotList[state.blackRook1.position],24,    state.blackRook1.dead  , state.whiteRook1.timesMoved)
     let blackBishop1 = new Piece('black', state.blackBishop1.name, 'blackBishop1', spotList[state.blackBishop1.position],25,  state.blackBishop1.dead, state.whiteBishop1.timesMoved)
     let blackKnight1 = new Piece('black', state.blackKnight1.name, 'blackKnight1', spotList[state.blackKnight1.position],26,  state.blackKnight1.dead, state.whiteKnight1.timesMoved)
     let blackQueen = new Piece('black',   state.blackQueen.name,   'blackQueen',   spotList[state.blackQueen.position],27,    state.blackQueen.dead  , state.whiteQueen.timesMoved)
@@ -93,6 +94,11 @@ function initPieces (state) {
         whiteRook1,whiteBishop1,whiteKnight1,whiteQueen,whiteKing,whiteKnight2,whiteBishop2,whiteRook2,
         blackPawn1,blackPawn2,blackPawn3,blackPawn4,blackPawn5,blackPawn6,blackPawn7,blackPawn8,
         blackRook1,blackBishop1,blackKnight1,blackQueen,blackKing,blackKnight2,blackBishop2,blackRook2]
+    
+
+    spotList.forEach(spot => {
+        spot.blocked = false
+    })
 
 
     // remove the dead pieces from every init of pieces
@@ -101,6 +107,7 @@ function initPieces (state) {
             piece.pieceDiv.parentElement.remove()
         } else {
             pieceList.push(piece)
+            piece.currentSpot.blocked = true
         }
     })
     
@@ -113,8 +120,16 @@ function initPieces (state) {
     whiteKing.setCheck(state.whiteKing.check)
     blackKing.setCheck(state.blackKing.check)
 
+    // convert pawn logic?
+    for (let index = 0;index < pieceList.length; index++) {
+        if (pieceList[index].name === 'pawn') {
+            pieceList[index].convertPawnLogic()
+        }
+    }
 
     toggleTurn(state.whiteTurn)
+
+    console.log(state)
 
 }
 
@@ -270,13 +285,13 @@ function unBlockHoverForAllOtherSpots() {
 
 function showBlockStatus() {
     // show block status
-    pieceList.forEach(element => {
-        element.pieceDiv.innerHTML = "<b>" + element.canHighlight + "</b>"
-    });
+    for (let index = 0; index < spotList.length; index++) {
+        let spot = spotList[index]
+        spot.spotDiv.innerText = spot.blocked
+    }
 }
 
 function removeDeadPiece (deadPiece) {
-
     deadPiece.pieceDiv.style.width = '40px'
     deadPiece.pieceDiv.style.height = '40px'
     deadPiece.pieceDiv.style.backgroundSize = 'cover'
@@ -299,11 +314,6 @@ function removeAllPieces() {
     // remove all pieces from the board
     pieceList.forEach(piece => {
         piece.pieceDiv.parentElement.remove()
-    })
-
-    spotList.forEach(spot => {
-        spot.blocked = false;
-        spot.spotDiv.style = "";
     })
 }
 
@@ -380,9 +390,6 @@ class Piece {
         // select piece when clicked on
         this.pieceDiv.onclick = () => (this.select())
 
-        // block the spot that this piece is on
-        this.currentSpot.blocked = true
-
         // update possible moves
         this.updatePossibleMoves()
 
@@ -410,6 +417,7 @@ class Piece {
                 element.spotDiv.style.backgroundColor = 'yellow'
             });
         }
+        showBlockStatus()
     }   
 
     unHighlightPossibleMoves() {
@@ -425,12 +433,13 @@ class Piece {
 
     convertPawnLogic() {
         if ((this.currentSpot.xIndex === 7 && this.name === 'pawn' && this.color === 'black' && amIwhite === false) || (this.currentSpot.xIndex === 0 && this.name === 'pawn' && this.color === 'white' && amIwhite === true)) {
-            console.log('ran pawnLogic')
             // convert piece logic
             dialogBox.showModal()
+            
             confirmBtn.onclick = () => {
-                // this.name = selectEl.value.toLowerCase()
+                this.name = selectEl.value.toLowerCase()
                 // this.pieceDiv.style.backgroundImage = "url('images/" + this.color + this.name + ".png')"
+
                 socket.emit('convert', this.camelCaseName, selectEl.value.toLowerCase(), gameID)
             }
         }
@@ -539,7 +548,7 @@ class Piece {
 
             this.possibleMoves = [...upLeft,...downRight,...upRight,...downLeft,...perpendiculars]
         }
-        
+
     }
 
     select() {
@@ -578,8 +587,6 @@ class Piece {
 
         selectedPiece.selected = false
 
-        selectedPiece.currentSpot.blocked = false
-
         // remove event listeners from possible spots of selected piece
         selectedPiece.possibleMoves.forEach(element => {
             element.spotDiv.style.backgroundColor = ""
@@ -587,7 +594,6 @@ class Piece {
 
         // update the selected piece currentSpot to newly picked spot
         selectedPiece.currentSpot = spotList[index]
-        selectedPiece.currentSpot.blocked = true
 
         // position piece via x and y coords
         selectedPiece.containerDiv.style.top = selectedPiece.currentSpot.position.top + 'px';
@@ -617,8 +623,7 @@ class Piece {
             
             socket.emit('updateState',gameID,state)
             
-    })
-        this.convertPawnLogic()
+        })
     }
 
     rookLogic() {
@@ -925,13 +930,11 @@ class Piece {
         
             clearKillSpots()
             this.killMoves = new Set([])
-            
+
             // delete the piece instance from array of pieces
             let deadPieceIndex = pieceList.indexOf(deadPiece)
             pieceList.splice(deadPieceIndex,1)
 
-            // remove "blocked" from the spot
-            deadPiece.currentSpot.blocked = false
             this.updatePossibleMoves()
 
             // this will end the game
@@ -1012,27 +1015,30 @@ let yIndex = 0
 let indexCount = 0
 
 
-// init all spots
-for (let index = 0; index < 64; index++) {
-    const newSpot = new Spot(index,xIndex,yIndex);
-    spotList.push(newSpot)
+    // init all spots
+function initSpots() {
+    for (let index = 0; index < 64; index++) {
+        const newSpot = new Spot(index,xIndex,yIndex);
+        spotList.push(newSpot)
 
-    indexCount++
+        indexCount++
 
-    // this sets the x index. Adds one to index every 8 times.
-    if (indexCount === xInit) {
-        xInit = xInit + 8
-        xIndex ++
-    }
+        // this sets the x index. Adds one to index every 8 times.
+        if (indexCount === xInit) {
+            xInit = xInit + 8
+            xIndex ++
+        }
 
-    // this sets the y index. Adds one to index until 7 and then starts over
-    if (yIndex < 7) {
-        yIndex ++;
-    } else if (yIndex === 7){
-        yIndex = 0;
+        // this sets the y index. Adds one to index until 7 and then starts over
+        if (yIndex < 7) {
+            yIndex ++;
+        } else if (yIndex === 7){
+            yIndex = 0;
+        }
     }
 }
 
+initSpots()
 
 socket.on('gameStart', (state) => {
     initPieces(state)
@@ -1053,8 +1059,33 @@ socket.on('confirmKill', (killedPiece) => {
     })
 
     selectedPiece.killFunc(killedPieceInstance[0])
+
 })
 
 socket.on('giveMeYourInfo', () => {
     socket.emit('playerInfo',myID,myUserName )
+})
+
+
+// chat functions
+function sendChat(msg) {
+    socket.emit('send-message', msg, gameID)
+    chatInput.value = ""
+}
+
+chatButton.addEventListener('click', (e) => {
+    sendChat(`${myUserName}: ${chatInput.value}`)
+})
+
+chatInput.addEventListener("keyup", ({key}) => {
+    if (key === "Enter") {
+        sendChat(`${myUserName}: ${chatInput.value}`)
+    }
+})
+
+socket.on('broadcast-message', (msg) => {
+    chatBox.value = `${chatBox.value}\n\n ${msg}`
+    
+    // keep textbox at the bottom
+    chatBox.scrollTop = chatBox.scrollHeight;
 })

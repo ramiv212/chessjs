@@ -33,7 +33,7 @@ class Game {
             "whiteBishop1": {name: 'bishop', position: 57, dead: false, timesMoved: 0},
             "whiteKnight1": {name: 'knight', position: 58, dead: false, timesMoved: 0},
             "whiteQueen":   {name: 'queen',  position: 59, dead: false, timesMoved: 0},
-            "whiteKing":    {name: 'king',   position: 60, dead: false, timesMoved: 0},
+            "whiteKing":    {name: 'king',   position: 60, dead: false, timesMoved: 0,check: true},
             "whiteKnight2": {name: 'knight', position: 61, dead: false, timesMoved: 0},
             "whiteBishop2": {name: 'bishop', position: 62, dead: false, timesMoved: 0},
             "whiteRook2":   {name: 'rook',   position: 63, dead: false, timesMoved: 0},
@@ -56,7 +56,7 @@ class Game {
             "player1id":    null,
             "player2id":    null,
             "whiteTurn":    true,
-            "gameID":       this.gameID
+            "gameID":       this.gameID,
         }
 
     }

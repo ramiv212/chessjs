@@ -7,7 +7,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
+        <title>HTML Chess - <%= myUserName %></title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="styles.css">
@@ -52,23 +52,26 @@
                 </div>
             </div>
 
-            <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;" id="app"></div>
+            <div id="app-container">
+              <div id="app"></div>
+            </div>
 
             <div id="main-chat-div">
               <div id="chat-title"><h2>Chat</h2></div>
-              <textarea id="chat-box" name="chat"></textarea>
-              <button>Send</button>
+              <textarea id="chat-box" name="chat" readonly></textarea>
+              <input type="text" id="chat-input"></input>
+              <button id="chat-button">Send</button>
             </div>
         </div>
         
         <script src="/socket.io/socket.io.js"></script>
           <script>
             const socket = io();
+
+            var myUserName = '<%= myUserName %>';
+            var myID = '<%= myID %>';
+
           </script>
         <script src="./common/chess.js" async defer></script>
-
-        <hidden id="myUserName"><%= myUserName %></hidden>
-        <hidden id="myID"><%= myID %></hidden>
-
     </body>
 </html>
