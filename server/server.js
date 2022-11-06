@@ -72,6 +72,11 @@ app.get("/chess", (req,res) => {
 
 })
 
+function emitUpdatedState(game) {
+  io.to(game.player1.userID).emit('updateState', game.getState)
+  io.to(game.player2.userID).emit('updateState', game.getState)
+}
+
 io.on("connection", (socket) => {
   socket.emit('giveMeYourInfo')
 
@@ -94,8 +99,8 @@ io.on("connection", (socket) => {
       io.to(player1.userID).emit('player-info', newGame.infoObject)
       io.to(player2.userID).emit('player-info', newGame.infoObject)
   
-      io.to(player1.userID).emit('gameStart',newGame.getState)  
-      io.to(player2.userID).emit('gameStart',newGame.getState)  
+      io.to(player1.userID).emit('game-start',newGame.getState)  
+      io.to(player2.userID).emit('game-start',newGame.getState)  
 
     }
 
@@ -103,8 +108,7 @@ io.on("connection", (socket) => {
       let game = activeGames[gameID]
       game.setState = state
 
-      io.to(game.player1.userID).emit('updateState', game.getState)
-      io.to(game.player2.userID).emit('updateState', game.getState)
+      emitUpdatedState(game)
 
     })
     
@@ -113,7 +117,6 @@ io.on("connection", (socket) => {
 
       game.toggleTurn()
       cb(game.getState)
-      console.log(game.getState.whiteTurn)
     })
   
     socket.on('kill',(killedPiece,gameID,cb) => {
@@ -143,8 +146,7 @@ io.on("connection", (socket) => {
 
       game.getState[piece].name = newName
       
-      io.to(game.player1.userID).emit('updateState', game.getState)
-      io.to(game.player2.userID).emit('updateState', game.getState)
+      emitUpdatedState(game)
     })
 
 
@@ -153,6 +155,14 @@ io.on("connection", (socket) => {
 
       io.to(game.player1.userID).emit('broadcast-message', msg)
       io.to(game.player2.userID).emit('broadcast-message', msg)
+    })
+
+    socket.on('game-over', (gameID) => {
+      let game = activeGames[gameID]
+
+      game.restart()
+
+      emitUpdatedState(game)
     })
 
 });

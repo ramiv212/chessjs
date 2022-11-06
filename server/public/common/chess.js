@@ -1,6 +1,7 @@
 const app = document.getElementById('app')
 
 // dialog box for upgrading pawn
+const waitingForPlayerOverlay = document.getElementById('waiting-for-player')
 const dialogBox = document.getElementById('pawnUpdate');
 const selectEl = dialogBox.querySelector('select');
 const confirmBtn = dialogBox.querySelector('#confirmBtn');
@@ -15,6 +16,7 @@ const chatBox = document.getElementById('chat-box')
 const chatInput = document.getElementById('chat-input')
 const chatButton = document.getElementById('chat-button')
 
+let playerInfo = null
 
 const spotList = []
 let pieceList = []
@@ -25,22 +27,42 @@ let amIwhite = null
 
 let gameID = null
 
+let gameCounter = 1
 
 
-
-socket.on('player-info',(info) => {
-
-    if (info !== null) {
-        document.getElementById('player-one-name').innerText = info.player1.name
-        document.getElementById('player-two-name').innerText = info.player2.name
-    }
-
+function checkWhoStarts(info) {
     //  check if current player is player one (white)
-    if (myUserName=== info.player1.name) {
+    if (gameCounter % 2 !== 0 && myUserName === info.player1.name) {
+        amIwhite = true
+    } else if (gameCounter % 2 === 0 && myUserName === info.player2.name) {
         amIwhite = true
     } else {
         amIwhite = false
     }
+    
+    if (info !== null && gameCounter % 2 !== 0) {
+        document.getElementById('player-one-name').innerText = info.player1.name
+        document.getElementById('player-two-name').innerText = info.player2.name
+    } else if(info !== null && gameCounter % 2 === 0) {
+        document.getElementById('player-one-name').innerText = info.player2.name
+        document.getElementById('player-two-name').innerText = info.player1.name
+    }
+}
+
+
+socket.on('player-info',(info) => {
+
+    if (info !== null && gameCounter % 2 !== 0) {
+        document.getElementById('player-one-name').innerText = info.player1.name
+        document.getElementById('player-two-name').innerText = info.player2.name
+    } else if(info !== null && gameCounter % 2 === 0) {
+        document.getElementById('player-one-name').innerText = info.player2.name
+        document.getElementById('player-two-name').innerText = info.player1.name
+    }
+
+    playerInfo = info
+    checkWhoStarts(info)
+
 })
 
 
@@ -63,7 +85,6 @@ function initPieces (state) {
     let whiteBishop1 = new Piece('white', state.whiteBishop1.name, 'whiteBishop1',  spotList[state.whiteBishop1.position],9,  state.whiteBishop1.dead, state.whiteBishop1.timesMoved)
     let whiteKnight1 = new Piece('white', state.whiteKnight1.name, 'whiteKnight1',  spotList[state.whiteKnight1.position],10, state.whiteKnight1.dead, state.whiteKnight1.timesMoved)
     let whiteQueen = new Piece('white',   state.whiteQueen.name,    'whiteQueen',   spotList[state.whiteQueen.position],11,   state.whiteQueen.dead  , state.whiteQueen.timesMoved)
-    let whiteKing = new Piece('white',    state.whiteKing.name,      'whiteKing',   spotList[state.whiteKing.position],12,    state.whiteKing.dead   , state.whiteKing.timesMoved)
     let whiteKnight2 = new Piece('white', state.whiteKnight2.name, 'whiteKnight2',  spotList[state.whiteKnight2.position],13, state.whiteKnight2.dead, state.whiteKnight2.timesMoved)
     let whiteBishop2 = new Piece('white', state.whiteBishop2.name, 'whiteBishop2',  spotList[state.whiteBishop2.position],14, state.whiteBishop2.dead, state.whiteBishop2.timesMoved)
     let whiteRook2 = new Piece('white',   state.whiteRook2.name,     'whiteRook2',  spotList[state.whiteRook2.position],15,   state.whiteRook2.dead  , state.whiteRook2.timesMoved)
@@ -85,10 +106,13 @@ function initPieces (state) {
     let blackBishop1 = new Piece('black', state.blackBishop1.name, 'blackBishop1', spotList[state.blackBishop1.position],25,  state.blackBishop1.dead, state.whiteBishop1.timesMoved)
     let blackKnight1 = new Piece('black', state.blackKnight1.name, 'blackKnight1', spotList[state.blackKnight1.position],26,  state.blackKnight1.dead, state.whiteKnight1.timesMoved)
     let blackQueen = new Piece('black',   state.blackQueen.name,   'blackQueen',   spotList[state.blackQueen.position],27,    state.blackQueen.dead  , state.whiteQueen.timesMoved)
-    let blackKing = new Piece('black',    state.blackKing.name,    'blackKing',    spotList[state.blackKing.position],28,     state.blackKing.dead   , state.whiteKing.timesMoved)
     let blackKnight2 = new Piece('black', state.blackKnight2.name, 'blackKnight2', spotList[state.blackKnight2.position],29,  state.blackKnight2.dead, state.whiteKnight2.timesMoved)
     let blackBishop2 = new Piece('black', state.blackBishop2.name, 'blackBishop2', spotList[state.blackBishop2.position],30,  state.blackBishop2.dead, state.whiteBishop2.timesMoved)
     let blackRook2 = new Piece('black',   state.blackRook2.name,   'blackRook2',   spotList[state.blackRook2.position],31,    state.blackRook2.dead  , state.whiteRook2.timesMoved)
+
+    let whiteKing = new Piece('white',    state.whiteKing.name,      'whiteKing',   spotList[state.whiteKing.position],12,    state.whiteKing.dead   , state.whiteKing.timesMoved)
+    let blackKing = new Piece('black',    state.blackKing.name,    'blackKing',    spotList[state.blackKing.position],28,     state.blackKing.dead   , state.whiteKing.timesMoved)
+
 
     let piecesToInit = [whitePawn1,whitePawn2,whitePawn3,whitePawn4,whitePawn5,whitePawn6,whitePawn7,whitePawn8,
         whiteRook1,whiteBishop1,whiteKnight1,whiteQueen,whiteKing,whiteKnight2,whiteBishop2,whiteRook2,
@@ -120,6 +144,7 @@ function initPieces (state) {
     whiteKing.setCheck(state.whiteKing.check)
     blackKing.setCheck(state.blackKing.check)
 
+
     // convert pawn logic?
     for (let index = 0;index < pieceList.length; index++) {
         if (pieceList[index].name === 'pawn') {
@@ -128,8 +153,6 @@ function initPieces (state) {
     }
 
     toggleTurn(state.whiteTurn)
-
-    console.log(state)
 
 }
 
@@ -319,22 +342,24 @@ function removeAllPieces() {
 
 
 function gameOver(color) {
+    
     if (color === 'black') {
         alert('White wins!')
     } else {
         alert('Black Wins!')
     }
 
-    removeAllPieces()
-
     // remove pieces from dead areas
     deadBlackPiecesDiv.innerHTML = ""
     deadWhitePiecesDiv.innerHTML = ""
 
-    initPieces()
+    spotList.forEach(spot => {
+        spot.spotDiv.style.backgroundColor = "";
+    })
 
-    whiteTurn = true
-
+    socket.emit('game-over', gameID)
+    gameCounter ++
+    checkWhoStarts(playerInfo)
 }
 
 
@@ -417,7 +442,6 @@ class Piece {
                 element.spotDiv.style.backgroundColor = 'yellow'
             });
         }
-        showBlockStatus()
     }   
 
     unHighlightPossibleMoves() {
@@ -435,7 +459,7 @@ class Piece {
         if ((this.currentSpot.xIndex === 7 && this.name === 'pawn' && this.color === 'black' && amIwhite === false) || (this.currentSpot.xIndex === 0 && this.name === 'pawn' && this.color === 'white' && amIwhite === true)) {
             // convert piece logic
             dialogBox.showModal()
-            
+
             confirmBtn.onclick = () => {
                 this.name = selectEl.value.toLowerCase()
                 // this.pieceDiv.style.backgroundImage = "url('images/" + this.color + this.name + ".png')"
@@ -936,11 +960,6 @@ class Piece {
             pieceList.splice(deadPieceIndex,1)
 
             this.updatePossibleMoves()
-
-            // this will end the game
-            if (deadPiece.name === 'king') {
-                gameOver(deadPiece.color)
-            }
         }
 
         // highlight the king if he is in check
@@ -1040,7 +1059,8 @@ function initSpots() {
 
 initSpots()
 
-socket.on('gameStart', (state) => {
+socket.on('game-start', (state) => {
+    waitingForPlayerOverlay.style.display = "none";
     initPieces(state)
     toggleTurn(state.whiteTurn)
 
@@ -1056,10 +1076,14 @@ socket.on('confirmKill', (killedPiece) => {
 
     let killedPieceInstance = pieceList.filter((piece) => {
         return piece.camelCaseName === killedPiece;
-    })
+    })[0]
 
-    selectedPiece.killFunc(killedPieceInstance[0])
+    selectedPiece.killFunc(killedPieceInstance)
 
+    // this will end the game
+    if (killedPieceInstance.name === 'king') {
+        gameOver(killedPieceInstance.color)
+    }
 })
 
 socket.on('giveMeYourInfo', () => {

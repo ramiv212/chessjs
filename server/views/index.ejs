@@ -4,19 +4,25 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>HTML Chess</title>
+    <link rel="stylesheet" href="styles.css">
+
     <link href='https://fonts.googleapis.com/css?family=Cinzel Decorative' rel='stylesheet'>
 
 </head>
 <body style="background-color: blanchedalmond;">
     <div style="display: flex; justify-content:center; align-items: center; height: 100vh; font-family: 'Cinzel Decorative'; flex-direction: column;">
-        <h1>HTML CHESS</h1>
+        <h1 id="index-heading">HTML CHESS</h1>
+
+        <div>
+            <span class="carrot"><</span><img src="./images/blackpawn.png"><span class="carrot">></span>
+        </div>
 
         <form action="/login" method="POST" id="signup">
-        Username: <input type="text" id="user-input" name="username"></input>
-        <br>   
-        <button type="submit">Log In</button>
-
+        Username: <input type="text" id="user-input" name="username"></input><br><br>
+            <div style="width: 100%; display: flex; justify-content:center;">
+                <button type="submit" style="margin: auto;" id="index-button">Log In</button>
+            </div>
         </form>
     </div>
 

@@ -18,6 +18,12 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
+        <div id="waiting-for-player">
+          <div style="background-color: rgb(204, 153, 102); padding: 20px; border-radius: 4px;">
+            Waiting for another player to log in...
+          </div>
+        </div>
+
         <dialog id="pawnUpdate">
             <form method="dialog">
               <p>
@@ -43,11 +49,11 @@
             <div id="main-hud-div">
                 <div id="title"><h1>HTML Chess</h1></div>
                 <div id="player-two-hud">
-                    <h1 style="line-height:28px;"><span id="player-two-name">Player Two</span><br><span style="font-size: 70%;">Black <span id="player-two-turn"></span></span></h1>
+                    <h1 style="line-height:28px;"><span id="player-two-name">Player Two</span><br><span style="font-size: 70%; margin-left: 15px;">Black <span id="player-two-turn"></span></span></h1>
                     <div id="dead-black-pieces"></div>
                 </div>
                 <div id="player-one-hud">
-                    <h1 style="line-height:28px;"><span id="player-one-name">Player One</span><br><span style="font-size: 70%;">White <span id="player-one-turn"></span></span></h1>
+                    <h1 style="line-height:28px;"><span id="player-one-name">Player One</span><br><span style="font-size: 70%; margin-left: 15px;">White <span id="player-one-turn"></span></span></h1>
                     <div id="dead-white-pieces"></div>
                 </div>
             </div>
