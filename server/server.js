@@ -83,7 +83,7 @@ io.on("connection", (socket) => {
   socket.on('playerInfo', (playerID,playerUsername) => {
     let newUser = new User(playerUsername,playerID)
 
-    console.log(`${newUser.playerUsername} logged in!`)
+    console.log(`${newUser.userName} logged in!`)
 
     socket.join(playerID)
 
@@ -104,7 +104,7 @@ io.on("connection", (socket) => {
       io.to(player1.userID).emit('game-start',newGame.getState)  
       io.to(player2.userID).emit('game-start',newGame.getState)
 
-      console.log(`A new game started with ${player1.playerUsername} and ${player2.playerUsername}!`)
+      console.log(`A new game started with ${player1.userName} and ${player2.userName}!`)
 
     }
 
